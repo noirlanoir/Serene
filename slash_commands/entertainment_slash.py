@@ -144,7 +144,7 @@ async def facepalm(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='sad', description='Погрустить.')
+@bot.tree.command(name='грустить', description='Погрустить.')
 async def sad(interaction: discord.Interaction):
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=sad')
     json_data = r.json()
@@ -157,7 +157,7 @@ async def sad(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='smug', description='Улыбнуться.')
+@bot.tree.command(name='улыбка', description='Улыбнуться.')
 async def smug(interaction: discord.Interaction):
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=smug')
     json_data = r.json()
@@ -184,7 +184,7 @@ async def oh_shit_im_sorry(interaction: discord.Interaction, участник: d
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='pat', description='Погладить по голове пользователя.')
+@bot.tree.command(name='погладить', description='Погладить по голове пользователя.')
 async def pat(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=pat')

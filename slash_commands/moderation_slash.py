@@ -196,7 +196,7 @@ async def kick(
             await interaction.response.send_message('Ошибка! У пользователя больше прав чем у бота.', ephemeral=True)
 
 
-@bot.tree.command(name='change_prefix', description='Меняет префикс бота.')
+@bot.tree.command(name='сменить_префикс', description='Меняет префикс бота.')
 async def setprefix(interaction: discord.Interaction, новый_префикс: str):
     new = новый_префикс
     with open('C:/Users/Andrew/PycharmProjects/seren/settings/prefix.json', 'r') as f:
