@@ -22,4 +22,5 @@ async def change_presence():
     if rand_num == 3:
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"за котиками."))
 
+
 bot.run(settings['token'])
