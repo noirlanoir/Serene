@@ -29,7 +29,6 @@ async def on_command_error(ctx, error):
 
 @bot.command()
 async def info(ctx, member: discord.Member = None):
-    global act, r
     if member is None:
         mobile_status = ctx.author.mobile_status
         pc_status = ctx.author.desktop_status
