@@ -24,8 +24,7 @@ async def help(interaction: discord.Interaction, команда: str = None):
         embed.add_field(name='**1. Слэш команды.**', value='⠀')
         embed.add_field(
             name='Команды модерации:',
-            value=
-            '`мут`, '
+            value='`мут`, '
             '`анмут`, '
             '`бан`, '
             '`кик`, '
@@ -35,8 +34,7 @@ async def help(interaction: discord.Interaction, команда: str = None):
         )
         embed.add_field(
             name='Развлекательные команды:',
-            value=
-            '`аватар`, '
+            value='`аватар`, '
             '`информация о сервере`, '
             '`поплакать`, '
             '`обнять`, '
@@ -57,8 +55,7 @@ async def help(interaction: discord.Interaction, команда: str = None):
         embed.add_field(name='**2. Обычные команды.**', value='⠀')
         embed.add_field(
             name='Команды модерации:',
-            value=
-            '`clear`, '
+            value='`clear`, '
             '`unban`. ', inline=False
         )
         embed.add_field(
@@ -73,9 +70,13 @@ async def help(interaction: discord.Interaction, команда: str = None):
         with open(commands_dir, 'r', encoding='utf8') as f:
             command_js = json.load(f)
         try:
-            c_d = command
-            return await interaction.response.send_message(f'Команда: `{c_d}`\nОписание: `{command_js[c_d]}`', ephemeral=True)
+            c_d = command.lower()
+            return await interaction.response.send_message(f'Команда: `{c_d}`\nОписание: `{command_js[c_d]}`',
+                                                           ephemeral=True)
         except KeyError:
-            await interaction.response.send_message(f'Команда `{c_d}` не найдена. Проверьте правильность написания команды либо просмотрите весь список через `/help`.', ephemeral=True)
+            await interaction.response.send_message(
+                f'Команда `{c_d}` не найдена. Проверьте правильность написания команды либо просмотрите весь список через `/help`.',
+                ephemeral=True)
+
 
 bot.run(settings['token'])
