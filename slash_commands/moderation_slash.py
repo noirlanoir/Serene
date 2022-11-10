@@ -5,8 +5,6 @@ from discord.ext import commands
 import json
 import os
 
-
-Client = discord.Client(intents=discord.Intents.all())
 bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
 
 curr_dir = os.path.abspath(os.curdir)
@@ -199,10 +197,10 @@ async def kick(
 @bot.tree.command(name='сменить_префикс', description='Меняет префикс бота.')
 async def setprefix(interaction: discord.Interaction, новый_префикс: str):
     new = новый_префикс
-    with open('C:/Users/Andrew/PycharmProjects/seren/settings/prefix.json', 'r') as f:
+    with open(prefix_dir, 'r') as f:
         prefix = json.load(f)
     prefix[str(interaction.user.guild.id)] = new
-    with open('C:/Users/Andrew/PycharmProjects/seren/settings/prefix.json', 'w') as w:
+    with open(prefix_dir, 'w') as w:
         json.dump(prefix, w, indent=4)
         await interaction.response.send_message(f'Префикс успешно сменён на {new}.')
 
@@ -238,6 +236,11 @@ async def get_server_prefix(interaction: discord.Interaction):
     with open(prefix_dir, 'r') as f:
         prefix = json.load(f)
     await interaction.response.send_message(f'Префикс бота на этом сервере: `{prefix[str(interaction.guild.id)]}`.')
+
+
+@bot.tree.command()
+async def ping(interaction: discord.Interaction):
+    await interaction.response.send_message(f'Понг! Я жив и ем шоколадки. `{round(bot.latency, 4)}` ms')
 
 
 bot.run(settings['token'])
