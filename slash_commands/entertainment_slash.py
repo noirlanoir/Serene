@@ -3,14 +3,12 @@ from settings.config import settings
 import discord
 import requests
 from discord.ext import commands
-from discord_together import DiscordTogether
 
 bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
 
 
 @bot.event
 async def on_ready():
-    bot.togetherControl = await DiscordTogether(settings['token'])
     synced = await bot.tree.sync()
     print(len(synced))
 
@@ -238,6 +236,12 @@ async def slap(interaction: discord.Interaction, участник: discord.Membe
     embed.timestamp = datetime.utcnow()
     embed.set_footer(text="🤍 • Serene.")
     await interaction.response.send_message(embed=embed)
+
+
+@bot.tree.command(name='перевернуть_текст', description='Выводит любой текст задом наперёд.')
+async def reversed_str(interaction: discord.Interaction, текст: str):
+    text = текст
+    await interaction.response.send_message(f'Перевернутый текст: **{text[::-1]}**')
 
 
 bot.run(settings['token'])
