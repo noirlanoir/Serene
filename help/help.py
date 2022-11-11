@@ -14,41 +14,50 @@ async def on_ready():
     print(len(synced))
 
 
+@bot.tree.error
+async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+    if interaction:
+        return
+    if error:
+        return
+
+
 @bot.tree.command(name='хелп', description='Показывает всю информацию о боте и команадах.')
 async def help(interaction: discord.Interaction, команда: str = None):
     global c_d
     command = команда
     if command is None:
-        embed = discord.Embed(title='Помощь.', color=0x9900ff)
+        embed = discord.Embed(title='⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀Помощь.', color=0x9900ff)
         embed.add_field(name='⠀', value='⠀')
         embed.add_field(name='**1. Слэш команды.**', value='⠀')
         embed.add_field(
             name='Команды модерации:',
             value='`мут`, '
-            '`анмут`, '
-            '`бан`, '
-            '`кик`, '
-            '`сменить префикс`, '
-            '`префикс`. ',
+                  '`анмут`, '
+                  '`бан`, '
+                  '`кик`, '
+                  '`сменить префикс`, '
+                  '`префикс`. ',
             inline=False
         )
         embed.add_field(
             name='Развлекательные команды:',
             value='`аватар`, '
-            '`информация о сервере`, '
-            '`поплакать`, '
-            '`обнять`, '
-            '`поцеловать`, '
-            '`танцевать`, \n'
-            '`лизнуть`, '
-            '`фейспалм`, '
-            '`грустить`, '
-            '`улыбка`, '
-            '`извиниться`, '
-            '`погладить`, '
-            '`ударить`, '
-            '`подмигнуть`,'
-            '`шлёпнуть`. ',
+                  '`информация о сервере`, '
+                  '`поплакать`, '
+                  '`обнять`, \n'
+                  '`поцеловать`, '
+                  '`танцевать`, \n'
+                  '`лизнуть`, '
+                  '`фейспалм`, '
+                  '`грустить`, '
+                  '`улыбка`, '
+                  '`извиниться`, \n'
+                  '`погладить`, '
+                  '`ударить`, '
+                  '`подмигнуть`,'
+                  '`шлёпнуть`, '
+                  '`перевернуть текст.`',
             inline=False
         )
         embed.add_field(name='⠀', value='⠀')
@@ -56,7 +65,7 @@ async def help(interaction: discord.Interaction, команда: str = None):
         embed.add_field(
             name='Команды модерации:',
             value='`clear`, '
-            '`unban`. ', inline=False
+                  '`unban`. ', inline=False
         )
         embed.add_field(
             name='Развлекательные команды:',
