@@ -7,18 +7,8 @@ from bs4 import BeautifulSoup
 import json
 import math
 
-bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
 
-
-@bot.event
-async def on_ready():
-    synced = await bot.tree.sync()
-    print(len(synced))
-
-
-@bot.tree.command(name='аниме',
-                  description='Выводит всю информацию про аниме. ')
-async def anime_search(interaction: discord.Interaction, название: str):
+async def _anime_search(interaction: discord.Interaction, название: str):
     name = название
     global _link, anime_url, i, text
     header = {
@@ -141,6 +131,3 @@ async def anime_search(interaction: discord.Interaction, название: str):
     embed.set_thumbnail(url=img_anime)
     embed.set_footer(text="🤍 • Serene. Сделано с помощью shikimori.one.")
     await interaction.response.send_message(embed=embed)
-
-
-bot.run(settings['token'])
