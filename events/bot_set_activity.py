@@ -8,7 +8,7 @@ bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, int
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="/help"))
+    await bot.change_presence(activity=discord.Game(name="/help_module"))
     await change_presence.start()
 
 
@@ -16,7 +16,7 @@ async def on_ready():
 async def change_presence():
     rand_num = random.randint(1, 3)
     if rand_num == 1:
-        await bot.change_presence(activity=discord.Game(name="/help"))
+        await bot.change_presence(activity=discord.Game(name="/help_module"))
     if rand_num == 2:
         await bot.change_presence(
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"за {len(bot.guilds)} серверами."))
