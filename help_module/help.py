@@ -22,7 +22,7 @@ async def on_app_command_error(interaction: discord.Interaction, error: discord.
         return
 
 
-@bot.tree.command(name='хелп', description='Показывает всю информацию о боте и команадах.')
+@bot.tree.command(name='хелп', description='Показывает всю информацию о боте и командах.')
 async def help(interaction: discord.Interaction, команда: str = None):
     global c_d
     command = команда
@@ -71,11 +71,14 @@ async def help(interaction: discord.Interaction, команда: str = None):
             name='Развлекательные команды:',
             value='`info`. ', inline=False
         )
+        embed.add_field(name='⠀', value='⠀', inline=False)
+        embed.add_field(name='Доп. возможности:', value=
+                        '`Для того, чтобы узнать описание команды, впишите ее после /хелп.\nВсе команды с пометкой "[/]" являются слэш командами.\nВсе команды с пометкой "[Prefix]" являются командами,\n которые работают по префиксу бота.`')
         await interaction.response.send_message(embed=embed)
     if command:
         curr_dir = (os.path.abspath(os.curdir))
         project_dir = os.path.dirname(curr_dir)
-        commands_dir = project_dir + '\help\commands_descr.json'
+        commands_dir = project_dir + '\help_module\commands_descr.json'
         with open(commands_dir, 'r', encoding='utf8') as f:
             command_js = json.load(f)
         try:
