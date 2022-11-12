@@ -32,7 +32,7 @@ async def anime_search(interaction: discord.Interaction, название: str):
     if NothingHere is []:
         return await interaction.response.send_message('Аниме не найдено.', ephemeral=True)
     restr = soup.find_all('p', class_='age-restricted-warning')
-    if restr is []:
+    if str(restr) != '[]':
         for n in restr:
             i = n.text
         if str(i) == 'Доступограничен 18+':
@@ -49,6 +49,7 @@ async def anime_search(interaction: discord.Interaction, название: str):
     json_data = r.json()
     anime_name = json_data['name']
     russian_name_anime = json_data['russian']
+    japanese_name_anime = json_data['japanese'][0]
     img_anime_temp = json_data['image']['original']
     img_anime = f'https://desu.shikimori.one/system/animes/preview/{str(img_anime_temp).replace("/system/animes/original/", "")}'
     description = json_data['description']
@@ -63,10 +64,11 @@ async def anime_search(interaction: discord.Interaction, название: str):
     page_a = requests.get(anime_url, headers=header)
     soup_a = BeautifulSoup(page_a.text, "lxml")
     genres = soup_a.find_all('span', class_='genre-ru')
-    genres_l = str(genres).replace('<span class="genre-ru">', '')
-    genres_l = genres_l.replace('</span>', '')
-    genres_l = genres_l.replace('[', '')
-    genres_l = genres_l.replace(']', '')
+    genres_l = (((str(genres).replace('<span class="genre-ru">', '')).replace('</span>', '')).replace('[', '')).replace(']', '')
+    if released is None:
+        released = 'Не вышел.'
+    if description is None:
+        description = '-'
     if str(kind) == 'tv':
         kind = 'ТВ сериал.'
     if str(kind) == 'special':
@@ -85,7 +87,11 @@ async def anime_search(interaction: discord.Interaction, название: str):
         status = 'Анонс.'
     if str(status) == 'ongoing':
         status = 'Онгоинг.'
+        released = '-'
     rating_age_detail = None
+    if str(rating_age) == 'none':
+        rating_age = '-'
+        rating_age_detail = '-'
     if str(rating_age) == 'g':
         rating_age = 'G'
         rating_age_detail = 'Нет возрастных ограничений.'
@@ -107,8 +113,6 @@ async def anime_search(interaction: discord.Interaction, название: str):
     if str(rating_age) == 'rx':
         rating_age = 'Rx'
         rating_age_detail = 'Хентай.'
-    if len(description) > 1024:
-        description = f'Описание слишком большое, просмотрите его вручную по ссылке: [Кликабельно.]({anime_url})'
     days = math.floor(duration_of_series / (24 * 60))
     total_minutes = duration_of_series
     left_minutes = total_minutes % (24 * 60)
@@ -117,11 +121,16 @@ async def anime_search(interaction: discord.Interaction, название: str):
     duration_of_series = f'{hours} ч. {mins} м.'
     embed = discord.Embed(title='⠀', color=0x9900ff)
     embed.add_field(name='Название: ', value=f'`{anime_name}`', inline=False)
-    embed.add_field(name='Русское название: ', value=f'`{russian_name_anime}`', inline=False)
-    embed.add_field(name='Описание:', value=f'`{description}`', inline=False)
+    embed.add_field(name='Русское название: ', value=f'`{russian_name_anime}`', inline=True)
+    embed.add_field(name='Японское название: ', value=f'`{japanese_name_anime}`', inline=True)
+    if len(description) > 1024:
+        description_too_long = f'Описание слишком большое, просмотрите его вручную по ссылке: [Кликабельно.]({anime_url})'
+        embed.add_field(name='Описание:', value=f'**{description_too_long}**', inline=False)
+    else:
+        embed.add_field(name='Описание:', value=f'`{description}`', inline=False)
     embed.add_field(name='Тип: ', value=f'`{kind}`', inline=True)
     embed.add_field(name='Статус:', value=f'`{status}`', inline=True)
-    embed.add_field(name='Эпизоды:', value=f'`{episodes}`', inline=True)
+    embed.add_field(name='Эпизодов:', value=f'`{episodes}`', inline=True)
     embed.add_field(name='Жанры:', value=f'`{genres_l}.`', inline=False)
     embed.add_field(name='Эпизодов вышло: ', value=f'`{episodes_aired}`', inline=True)
     embed.add_field(name='Вышел в: ', value=f'`{released}`', inline=True)
@@ -130,7 +139,7 @@ async def anime_search(interaction: discord.Interaction, название: str):
     embed.add_field(name='Длительность эпизода: ', value=f'`{duration_of_series}`', inline=True)
     embed.add_field(name='Ссылка на аниме:', value=f'[Кликабельно]({anime_url})', inline=False)
     embed.set_thumbnail(url=img_anime)
-    embed.set_footer(text="🤍 • Serene. Сделано с помощью shikimori.one")
+    embed.set_footer(text="🤍 • Serene. Сделано с помощью shikimori.one.")
     await interaction.response.send_message(embed=embed)
 
 
