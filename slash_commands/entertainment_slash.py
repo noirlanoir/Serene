@@ -4,25 +4,8 @@ import discord
 import requests
 from discord.ext import commands
 
-bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
 
-
-@bot.event
-async def on_ready():
-    synced = await bot.tree.sync()
-    print(len(synced))
-
-
-@bot.tree.error
-async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
-    if interaction:
-        return
-    if error:
-        return
-
-
-@bot.tree.command(name='аватар', description='Показывает аватар пользователя.')
-async def avatar(interaction: discord.Interaction, member: discord.Member):
+async def _avatar(interaction: discord.Interaction, member: discord.Member):
     if member is None:
         embed = discord.Embed(
             title=f'Аватар {interaction.user.display_name}',
@@ -41,8 +24,7 @@ async def avatar(interaction: discord.Interaction, member: discord.Member):
         return await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='информация_о_сервере', description='Показывает информацию о сервере.')
-async def serverinfo(interaction: discord.Interaction):
+async def _serverinfo(interaction: discord.Interaction):
     embed = discord.Embed(title=f"Информация про сервер:\n{interaction.guild.name}",
                           color=discord.Colour.purple())
     embed.add_field(name='⠀', value='⠀', inline=False)
@@ -63,8 +45,7 @@ async def serverinfo(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='поплакать', description='Поплакать.')
-async def cry(interaction: discord.Interaction):
+async def _cry(interaction: discord.Interaction):
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=cry')
     json_data = r.json()
     url = json_data['url']
@@ -75,8 +56,7 @@ async def cry(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='обнять', description='Обнять пользователя.')
-async def hug(interaction: discord.Interaction, участник: discord.Member):
+async def _hug(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=hug')
     json_data = r.json()
@@ -89,8 +69,7 @@ async def hug(interaction: discord.Interaction, участник: discord.Member
     return await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='поцеловать', description='Поцеловать пользователя.')
-async def kiss(interaction: discord.Interaction, участник: discord.Member):
+async def _kiss(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=kiss')
     json_data = r.json()
@@ -103,8 +82,7 @@ async def kiss(interaction: discord.Interaction, участник: discord.Membe
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='танцевать')
-async def dance(interaction: discord.Interaction):
+async def _dance(interaction: discord.Interaction):
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=dance')
     json_data = r.json()
     url = json_data['url']
@@ -115,8 +93,7 @@ async def dance(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='лизнуть', description='Лизнуть пользователя.')
-async def lick(interaction: discord.Interaction, участник: discord.Member):
+async def _lick(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=lick')
     json_data = r.json()
@@ -129,8 +106,7 @@ async def lick(interaction: discord.Interaction, участник: discord.Membe
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='фейспалм', description='Кринжануть.')
-async def facepalm(interaction: discord.Interaction):
+async def _facepalm(interaction: discord.Interaction):
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=facepalm')
     json_data = r.json()
     url = json_data['url']
@@ -142,8 +118,7 @@ async def facepalm(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='грустить', description='Погрустить.')
-async def sad(interaction: discord.Interaction):
+async def _sad(interaction: discord.Interaction):
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=sad')
     json_data = r.json()
     url = json_data['url']
@@ -155,8 +130,7 @@ async def sad(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='улыбка', description='Улыбнуться.')
-async def smug(interaction: discord.Interaction):
+async def _smug(interaction: discord.Interaction):
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=smug')
     json_data = r.json()
     url = json_data['url']
@@ -168,8 +142,7 @@ async def smug(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='извиниться', description='Извиниться перед пользователем.')
-async def oh_shit_im_sorry(interaction: discord.Interaction, участник: discord.Member):
+async def _oh_shit_im_sorry(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=sorry')
     json_data = r.json()
@@ -182,8 +155,7 @@ async def oh_shit_im_sorry(interaction: discord.Interaction, участник: d
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='погладить', description='Погладить по голове пользователя.')
-async def pat(interaction: discord.Interaction, участник: discord.Member):
+async def _pat(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=pat')
     json_data = r.json()
@@ -196,8 +168,7 @@ async def pat(interaction: discord.Interaction, участник: discord.Member
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='ударить', description='Ударить пользователя.')
-async def punch(interaction: discord.Interaction, участник: discord.Member):
+async def _punch(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=punch')
     json_data = r.json()
@@ -210,8 +181,7 @@ async def punch(interaction: discord.Interaction, участник: discord.Memb
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='подмигнуть', description='Подмигнуть пользователю.')
-async def wink(interaction: discord.Interaction, участник: discord.Member):
+async def _wink(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=wink')
     json_data = r.json()
@@ -224,8 +194,7 @@ async def wink(interaction: discord.Interaction, участник: discord.Membe
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='шлёпнуть', description='Шлёпнуть пользователя.')
-async def slap(interaction: discord.Interaction, участник: discord.Member):
+async def _slap(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     r = requests.get('https://api.otakugifs.xyz/gif?reaction=slap')
     json_data = r.json()
@@ -238,10 +207,5 @@ async def slap(interaction: discord.Interaction, участник: discord.Membe
     await interaction.response.send_message(embed=embed)
 
 
-@bot.tree.command(name='перевернуть_текст', description='Выводит любой текст задом наперёд.')
-async def reversed_str(interaction: discord.Interaction, текст: str):
-    text = текст
-    await interaction.response.send_message(f'Перевернутый текст: **{text[::-1]}**')
-
-
-bot.run(settings['token'])
+async def _reversed_str(interaction: discord.Interaction, текст: str):
+    await interaction.response.send_message(f'Перевернутый текст: **{текст[::-1]}**')
