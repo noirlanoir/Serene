@@ -5,47 +5,20 @@ from discord.ext import commands
 import json
 import os
 
-bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
-
 curr_dir = os.path.abspath(os.curdir)
 project_dir = os.path.dirname(curr_dir)
 prefix_dir = project_dir + '\settings\prefix.json'
-
-
-@bot.event
-async def on_ready():
-    synced = await bot.tree.sync()
-    print(len(synced))
-
-
-@bot.event
-async def on_command_error(ctx, error):
-    if ctx.message.author is None:
-        pass
-    if isinstance(error, discord.ext.commands.CommandNotFound):
-        pass
-
-
-@bot.tree.error
-async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
-    if interaction:
-        return
-    if error:
-        return
-
-
 timestamp = datetime.datetime.today()
 
 
-@bot.tree.command(name='замутить', description='Выдает таймаут пользователю.')
-async def mute(
+async def _mute(
         interaction: discord.Interaction,
         участник: discord.Member,
         время: int,
         тип: str = None,
         причина: str = None
 ):
-    if not interaction.user.guild_permissions.administrator:
+    if not interaction.user.guild_permissions.moderate_members:
         return await interaction.response.send_message('У вас отсутствуют права администратора.', ephemeral=True)
     member = участник
     mute_time = время
@@ -108,7 +81,7 @@ async def mute(
         await member.timeout(muted_until)
     except discord.errors.Forbidden as e:
         if str(e) == '403 Forbidden (error code: 50013): Missing Permissions':
-            await interaction.response.send_message('Ошибка! У пользователя больше прав чем у бота.', ephemeral=True)
+            await interaction.response.send_message('`Ошибка! Возможно, у бота отсутствуют права, либо у пользователя их больше, чем у бота.`', ephemeral=True)
     embed_mute = discord.Embed(title=f'**Мут.**', color=0x9900ff, timestamp=datetime.datetime.utcnow())
     embed_mute.add_field(name='`Выдал:`', value=interaction.user.mention, inline=True)
     embed_mute.add_field(name='`Нарушитель:`', value=member.mention, inline=True)
@@ -122,12 +95,11 @@ async def mute(
     await interaction.response.send_message(embed=embed_mute)
 
 
-@bot.tree.command(name='анмут', description='Снимает таймаут с пользователя.')
-async def unmute(
+async def _unmute(
         interaction: discord.Interaction,
         участник: discord.Member
 ):
-    if not interaction.user.guild_permissions.administrator:
+    if not interaction.user.guild_permissions.moderate_members:
         return await interaction.response.send_message('У вас отсутствуют права администратора.', ephemeral=True)
     member = участник
     if member.is_timed_out() is True:
@@ -138,14 +110,13 @@ async def unmute(
                                                        ephemeral=True)
 
 
-@bot.tree.command(name='забанить', description='Банит пользователя на сервере.')
-async def ban(
+async def _ban(
         interaction: discord.Interaction,
         участник: discord.Member,
         причина: str = None,
 ):
-    if not interaction.user.guild_permissions.administrator:
-        return await interaction.response.send_message('У вас отсутствуют права администратора.', ephemeral=True)
+    if not interaction.user.guild_permissions.ban_members:
+        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
     reason = причина
     member = участник
     if reason is None:
@@ -163,17 +134,16 @@ async def ban(
         await interaction.response.send_message(embed=embed_ban)
     except discord.errors.Forbidden as e:
         if str(e) == '403 Forbidden (error code: 50013): Missing Permissions':
-            await interaction.response.send_message('Ошибка! У пользователя больше прав чем у бота.', ephemeral=True)
+            await interaction.response.send_message('`Ошибка! Возможно, у бота отсутствуют права, либо у пользователя их больше, чем у бота.`', ephemeral=True)
 
 
-@bot.tree.command(name='выгнать', description='Выгоняет пользователя с сервера.')
-async def kick(
+async def _kick(
         interaction: discord.Interaction,
         участник: discord.Member,
         причина: str = None
 ):
-    if not interaction.user.guild_permissions.administrator:
-        return await interaction.response.send_message('У вас отсутствуют права администратора.', ephemeral=True)
+    if not interaction.user.guild_permissions.kick_members:
+        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
     member = участник
     reason = причина
     if reason is None:
@@ -191,11 +161,12 @@ async def kick(
         await interaction.response.send_message(embed=embed_ban)
     except discord.errors.Forbidden as e:
         if str(e) == '403 Forbidden (error code: 50013): Missing Permissions':
-            await interaction.response.send_message('Ошибка! У пользователя больше прав чем у бота.', ephemeral=True)
+            await interaction.response.send_message('`Ошибка! Возможно, у бота отсутствуют права, либо у пользователя их больше, чем у бота.`', ephemeral=True)
 
 
-@bot.tree.command(name='сменить_префикс', description='Меняет префикс бота.')
-async def setprefix(interaction: discord.Interaction, новый_префикс: str):
+async def _setprefix(interaction: discord.Interaction, новый_префикс: str):
+    if not interaction.user.guild_permissions.administrator:
+        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
     new = новый_префикс
     with open(prefix_dir, 'r') as f:
         prefix = json.load(f)
@@ -231,16 +202,12 @@ async def setprefix(interaction: discord.Interaction, новый_префикс:
 #     embed_unban.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)
 #     return interaction.response.send_message(embed=embed_unban)
 
-@bot.tree.command(name='префикс', description='Узнать префикс бота на этом сервере.')
-async def get_server_prefix(interaction: discord.Interaction):
+
+async def _get_server_prefix(interaction: discord.Interaction):
     with open(prefix_dir, 'r') as f:
         prefix = json.load(f)
-    await interaction.response.send_message(f'Префикс бота на этом сервере: `{prefix[str(interaction.guild.id)]}`.')
+    await interaction.response.send_message(f'Префикс бота на этом сервере: `{prefix[str(interaction.guild.id)]}`.', ephemeral=True)
 
 
-@bot.tree.command()
-async def ping(interaction: discord.Interaction):
+async def _ping(interaction: discord.Interaction):
     await interaction.response.send_message(f'Понг! Я жив и ем шоколадки. `{round(bot.latency, 4)}` ms')
-
-
-bot.run(settings['token'])
