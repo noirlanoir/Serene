@@ -26,7 +26,7 @@ async def _anime_search(interaction: discord.Interaction, название: str)
         for n in restr:
             i = n.text
         if str(i) == 'Доступограничен 18+':
-            return await interaction.response.send_message('Не доступно в данный момент.')
+            return await interaction.response.send_message('Недоступно в данный момент.')
     links = []
     for hr in soup.find_all('a'):
         links.append(hr.get('href'))
