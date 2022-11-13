@@ -1,14 +1,16 @@
-from datetime import datetime
 from settings.config import settings
 import discord
-import requests
 from discord.ext import commands
 from entertainment_slash import _avatar, _pat, _sad, _lick, _slap, _smug, _wink, _punch, _facepalm, _reversed_str, \
     _oh_shit_im_sorry, _cry, _hug, _kiss, _dance, _serverinfo
 from anime_finder_slash import _anime_search
 from moderation_slash import _ping, _ban, _kick, _mute, _unmute, _setprefix, _get_server_prefix
+from help_slash import _help
+from r34_finder_slash import _r34_finder
+from hentai_imgs_search import _search_hentai
 
 bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
+bot.remove_command('help')
 
 
 @bot.event
@@ -164,9 +166,19 @@ async def mute(
     await _mute(interaction, участник, время, тип, причина)
 
 
-@bot.tree.command(name='хелп', description='Показывает всю информацию о боте и команадах.')
+@bot.tree.command(name='хелп', description='Информация о командах бота.')
 async def help(interaction: discord.Interaction, команда: str = None):
-    await _help_c(interaction, команда)
+    await _help(interaction, команда)
+
+
+# @bot.tree.command(name='r34', description='Поиск rule34 картинок по запросу. Примечание: запрос желателен на английском языке.')
+# async def r34(interaction: discord.Interaction, запрос: str):
+#    await _r34(interaction, запрос)
+
+
+@bot.tree.command(name='hentai_search')
+async def search_hentai(interaction: discord.Interaction, поиск: str):
+    await _search_hentai(interaction, поиск)
 
 
 bot.run(settings['token'])
