@@ -2,7 +2,7 @@ from settings.config import settings
 import discord
 from discord.ext import commands
 from entertainment_slash import _avatar, _pat, _sad, _lick, _slap, _smug, _wink, _punch, _facepalm, _reversed_str, \
-    _oh_shit_im_sorry, _cry, _hug, _kiss, _dance, _serverinfo
+    _oh_shit_im_sorry, _cry, _hug, _kiss, _dance, _serverinfo, _ratewifu
 from anime_finder_slash import _anime_search
 from moderation_slash import _ping, _ban, _kick, _mute, _unmute, _setprefix, _get_server_prefix
 from help_slash import _help
@@ -27,6 +27,14 @@ async def on_app_command_error(interaction: discord.Interaction, error: discord.
         return
 
 
+@bot.event
+async def on_command_error(ctx, error):
+    if ctx.message.author is None:
+        pass
+    if isinstance(error, discord.ext.commands.CommandNotFound):
+        pass
+
+
 @bot.tree.command(name='аниме',
                   description='Выводит всю информацию про аниме. ')
 async def anime_search(interaction: discord.Interaction, название: str):
@@ -44,7 +52,7 @@ async def ping(interaction: discord.Interaction):
     await _ping(interaction)
 
 
-@bot.tree.command(name='перевернуть_текст', description='Выводит любой текст задом наперёд.')
+@bot.tree.command(name='перевернуть-текст', description='Выводит любой текст задом наперёд.')
 async def reversed_str(interaction: discord.Interaction, текст: str):
     await _reversed_str(interaction, текст)
 
@@ -114,7 +122,7 @@ async def cry(interaction: discord.Interaction):
     await _cry(interaction)
 
 
-@bot.tree.command(name='информация_о_сервере', description='Показывает информацию о сервере.')
+@bot.tree.command(name='информация-о-сервере', description='Показывает информацию о сервере.')
 async def serverinfo(interaction: discord.Interaction):
     await _serverinfo(interaction)
 
@@ -124,7 +132,7 @@ async def get_server_prefix(interaction: discord.Interaction):
     await _get_server_prefix(interaction)
 
 
-@bot.tree.command(name='сменить_префикс', description='Меняет префикс бота.')
+@bot.tree.command(name='сменить-префикс', description='Меняет префикс бота.')
 async def setprefix(interaction: discord.Interaction, новый_префикс: str):
     await _setprefix(interaction, новый_префикс)
 
@@ -171,12 +179,18 @@ async def help(interaction: discord.Interaction, команда: str = None):
     await _help(interaction, команда)
 
 
+@bot.tree.command(name='оценить-вайфу', description='Оценивает пользователя по 10-бальной шкале.')
+async def ratewifu(interaction: discord.Interaction, участник: discord.Member):
+    await _ratewifu(interaction, участник)
+
+
 # @bot.tree.command(name='r34', description='Поиск rule34 картинок по запросу. Примечание: запрос желателен на английском языке.')
 # async def r34(interaction: discord.Interaction, запрос: str):
 #    await _r34(interaction, запрос)
 
 
-@bot.tree.command(name='hentai_search')
+@bot.tree.command(name='хентай',
+                  description='Поиск хентай картинок. Примечание: запрос должен быть на английском языке.')
 async def search_hentai(interaction: discord.Interaction, поиск: str):
     await _search_hentai(interaction, поиск)
 

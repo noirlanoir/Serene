@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 from settings.config import settings
 import discord
@@ -209,3 +210,9 @@ async def _slap(interaction: discord.Interaction, участник: discord.Memb
 
 async def _reversed_str(interaction: discord.Interaction, текст: str):
     await interaction.response.send_message(f'Перевернутый текст: **{текст[::-1]}**')
+
+
+async def _ratewifu(interaction: discord.Interaction, участник: discord.Member):
+    member = участник
+    RandNum = random.randint(1, 10)
+    await interaction.response.send_message(f'**Я бы дала {member.mention} **`{RandNum}/10.`')
