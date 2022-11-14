@@ -6,7 +6,6 @@ from settings.config import settings
 import discord
 from discord.ext import commands
 
-
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
              (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'
@@ -37,9 +36,11 @@ async def _search_hentai(interaction: discord.Interaction, поиск: str):
     while n < len(imgs):
         new_img_list.append((str(imgs[n]).replace('<img loading="lazy" src="', '')).replace('"/>', ""))
         n += 1
-    random_url = random.choice(new_img_list)
-    print(random_url)
-    embed = discord.Embed(title='Вот, что нашлось по запросу:', description=f'[Если картинка не прогрузилась, нажмите сюда]({random_url})', color=0x9900ff)
+    try:
+        random_url = random.choice(new_img_list)
+    except IndexError:
+        return await interaction.response.send_message('`По вашему запросу ничего не найдено.`', ephemeral=True)
+    embed = discord.Embed(title='Вот, что нашлось по запросу:',
+                          description=f'[Если картинка не прогрузилась, нажмите сюда]({random_url})', color=0x9900ff)
     await interaction.channel.send(random_url)
     await interaction.response.send_message(embed=embed)
-
