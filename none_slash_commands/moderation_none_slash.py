@@ -29,8 +29,8 @@ async def on_app_command_error(interaction: discord.Interaction, error: discord.
 
 @bot.command()
 async def clear(ctx, amount: int):
-    if not ctx.author.guild_permissions.administrator:
-        return await ctx.send('У вас отсутствуют права администратора.')
+    if not ctx.author.guild_permissions.manage_messages:
+        return await ctx.send('`У вас отсутствуют права на это действие.`')
     if amount <= 0:
         return await ctx.send('Количество удаляемых сообщений должно быть больше 0.')
     if amount > 500:
@@ -42,7 +42,7 @@ async def clear(ctx, amount: int):
 @bot.command()
 async def unban(ctx, member: discord.Member = None):
     if not ctx.author.guild_permissions.administrator:
-        return await ctx.send('У вас отсутствуют права администратора.')
+        return await ctx.send('`У вас отсутствуют права на это действие.`')
     if member is None:
         embed_error = discord.Embed(title='Ошибка снятия бана.',
                                     description=f'{ctx.author.mention}, Укажите пользователя!',
