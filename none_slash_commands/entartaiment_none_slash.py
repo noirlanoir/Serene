@@ -70,6 +70,7 @@ async def info(ctx, member: discord.Member = None):
         embed.add_field(name='❖ Статусы: ',
                         value=f'📱 Мобильный статус: {mobile_status_emoji}\n 🌍 Веб статус: {web_status_emoji}\n 💻 Пк статус: {desc_status_emoji}',
                         inline=False)
+        embed.set_image(url=ctx.author.avatar)
         embed.set_footer(text="🤍 • Serene.")
         await ctx.send(embed=embed)
     if member:
@@ -113,6 +114,7 @@ async def info(ctx, member: discord.Member = None):
         embed.add_field(name='❖ Статусы устройств: ',
                         value=f'📱 Мобильный статус: {mobile_status_emoji}\n 🌍 Веб статус: {web_status_emoji}\n 💻 Пк статус: {desc_status_emoji}',
                         inline=False)
+        embed.set_image(url=member.avatar)
         embed.set_footer(text="🤍 • Serene.")
         await ctx.send(embed=embed)
 
