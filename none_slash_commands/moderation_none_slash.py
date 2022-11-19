@@ -40,30 +40,24 @@ async def clear(ctx, amount: int):
 
 
 @bot.command()
-async def unban(ctx, member: discord.Member = None):
-    if not ctx.author.guild_permissions.administrator:
-        return await ctx.send('`У вас отсутствуют права на это действие.`')
-    if member is None:
+async def unban(ctx, member_id: int):
+    #     if not ctx.author.guild_permissions.administrator:
+    #         return await ctx.send('`У вас отсутствуют права на это действие.`')
+    global banned_user
+    if member_id is None:
         embed_error = discord.Embed(title='Ошибка снятия бана.',
-                                    description=f'{ctx.author.mention}, Укажите пользователя!',
+                                    description=f'{ctx.author.mention}, Укажите id пользователя!',
                                     color=0x9900ff)
         return await ctx.send(embed=embed_error)
     try:
-        banned_user = await bot.fetch_user(member.id)
+        banned_user = await bot.fetch_user(member_id)
         await ctx.guild.unban(banned_user)
-    except discord.errors.NotFound as e:
-        if e:
-            embed_error = discord.Embed(title='Ошибка снятия бана.',
-                                        description=f'{ctx.author.mention}, Пользователь не в бане!',
-                                        color=0x9900ff)
-            return await ctx.send(embed=embed_error)
-    embed_unban = discord.Embed(title=f'**Снятие бана.**', color=0x9900ff)
-    embed_unban.add_field(name='`Снял:`', value=ctx.author.mention, inline=False)
-    embed_unban.add_field(name='`Пользователь:`', value=member.mention, inline=True)
-    embed_unban.add_field(name='`ID пользователя:`', value=member.id, inline=False)
-    embed_unban.set_footer(text=f'Дата: {times_start.strftime("%Y-%M-%d, %H:%M:%S")}')
-    embed_unban.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon)
-    await ctx.send(embed=embed_unban)
+        await ctx.send(f'`Пользователь` {banned_user.mention} `был разбанен.`')
+    except discord.errors.NotFound:
+        embed_error = discord.Embed(title='Ошибка снятия бана.',
+                                    description=f'{ctx.author.mention}, Пользователь не в бане!',
+                                    color=0x9900ff)
+        await ctx.reply(embed=embed_error)
 
 
 @bot.event
