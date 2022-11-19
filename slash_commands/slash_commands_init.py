@@ -1,16 +1,21 @@
 from settings.config import settings
 import discord
+from pymongo import MongoClient
+from discord import app_commands
 from discord.ext import commands
 from entertainment_slash import _avatar, _pat, _sad, _lick, _slap, _smug, _wink, _punch, _facepalm, _reversed_str, \
     _oh_shit_im_sorry, _cry, _hug, _kiss, _dance, _serverinfo, _ratewifu
 from anime_finder_slash import _anime_search
 from moderation_slash import _ping, _ban, _kick, _mute, _unmute, _setprefix, _get_server_prefix
 from help_slash import _help
-from r34_finder_slash import _r34_finder
 from hentai_imgs_search import _search_hentai
+from nekofinder import _nekoFinder
 
 bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
 bot.remove_command('help')
+
+client = MongoClient(settings['database_url'])
+database = client.SereneDB.DsActLog
 
 
 @bot.event
@@ -189,10 +194,243 @@ async def ratewifu(interaction: discord.Interaction, участник: discord.M
 #    await _r34(interaction, запрос)
 
 
-@bot.tree.command(name='хентай',
-                  description='Поиск хентай картинок. Примечание: запрос должен быть на английском языке.')
-async def search_hentai(interaction: discord.Interaction, поиск: str):
+@bot.tree.command(name='nsfw-картинки',
+                  description='Поиск непристойных изображений!')
+@app_commands.choices(поиск=[
+    discord.app_commands.Choice(name='anal(анал)', value='anal'),
+    discord.app_commands.Choice(name='ass(попка)', value='ass'),
+    discord.app_commands.Choice(name='bdsm(бдсм)', value='bdsm'),
+    discord.app_commands.Choice(name='cum(малафья)', value='cum'),
+    discord.app_commands.Choice(name='classic(классическое)', value='classic'),
+    discord.app_commands.Choice(name='creampie(кремпайчик)', value='creampie'),
+    discord.app_commands.Choice(name='femdom(доминация девушек)', value='femdom'),
+    discord.app_commands.Choice(name='hentai(рандом хентайчик)', value='hentai'),
+    discord.app_commands.Choice(name='incest(инцест)', value='incest'),
+    discord.app_commands.Choice(name='masturbation(мастурбация)', value='femdom'),
+    discord.app_commands.Choice(name='public(в публичном месте)', value='public'),
+    discord.app_commands.Choice(name='ero(эро)', value='ero'),
+    discord.app_commands.Choice(name='orgy(оргия)', value='orgy'),
+    discord.app_commands.Choice(name='elves(эльфочки)', value='elves'),
+    discord.app_commands.Choice(name='yuri(лесбиянки)', value='yuri'),
+    discord.app_commands.Choice(name='pantsu(трусики)', value='pantsu'),
+    discord.app_commands.Choice(name='blowjob(минетик)', value='blowjob'),
+    discord.app_commands.Choice(name='boobjob(работа грудью)', value='boobjob'),
+    discord.app_commands.Choice(name='footjob(работа ножками)', value='footjob'),
+    discord.app_commands.Choice(name='handjob(работа ручками)', value='handjob'),
+    discord.app_commands.Choice(name='boobs(сисечки)', value='boobs'),
+    discord.app_commands.Choice(name='pussy(писечка)', value='pussy'),
+    discord.app_commands.Choice(name='uniform(униформа)', value='uniform'),
+    discord.app_commands.Choice(name='tentacles(тентакли)', value='tentacles'),
+    discord.app_commands.Choice(name='nsfwNeko(кошкодевочки)', value='nsfwNeko'),
+])
+async def search_hentai(interaction: discord.Interaction, поиск: app_commands.Choice[str]):
     await _search_hentai(interaction, поиск)
 
+
+@bot.tree.command(name='логи-информация', description='Просмотреть статус всех опций логирования на этом сервере.')
+async def _logs_information(interaction: discord.Interaction):
+    isEnabled = database.find_one({'guild_id': interaction.guild.id})['enabled']
+    logChannel = database.find_one({'guild_id': interaction.guild.id})['actlogchannel']
+    isEnabledChannelCreate = database.find_one({'guild_id': interaction.guild.id})['channel_create']
+    isEnabledChannelDelete = database.find_one({'guild_id': interaction.guild.id})['channel_delete']
+    isEnabledChannelUpdate = database.find_one({'guild_id': interaction.guild.id})['channel_update']
+    isEnabledMemberJoin = database.find_one({'guild_id': interaction.guild.id})['member_join']
+    isEnabledMemberLeave = database.find_one({'guild_id': interaction.guild.id})['member_leave']
+    isEnabledMemberKick = database.find_one({'guild_id': interaction.guild.id})['member_kick']
+    isEnabledMemberUnban = database.find_one({'guild_id': interaction.guild.id})['member_unban']
+    isEnabledMemberUpdate = database.find_one({'guild_id': interaction.guild.id})['member_update']
+    isEnabledVoiceUpdate = database.find_one({'guild_id': interaction.guild.id})['voice_update']
+    isEnabledMessageDelete = database.find_one({'guild_id': interaction.guild.id})['message_delete']
+    isEnabledMessageEdit = database.find_one({'guild_id': interaction.guild.id})['message_edit']
+    isEnabledRoleCreate = database.find_one({'guild_id': interaction.guild.id})['role_create']
+    isEnabledRoleDelete = database.find_one({'guild_id': interaction.guild.id})['role_delete']
+    isEnabledRoleUpdate = database.find_one({'guild_id': interaction.guild.id})['role_update']
+    if logChannel == '':
+        val = '`Отсутствует`'
+    else:
+        val = f'Айди: `{logChannel}`'
+    embed = discord.Embed(title='Информация об опциях:',
+                          description='`В данной информации представлены статусы опций логирования на этом сервере.`',
+                          color=0x9900ff)
+    embed.add_field(name='enabled', value=f'{"`Включено`" if isEnabled == "True" else "`Выключено`"}', inline=False)
+    embed.add_field(name='actionlogchannel', value=f'{val}',
+                    inline=False)
+    embed.add_field(name='channel_create',
+                    value=f'{"`Включено`" if isEnabledChannelCreate == "True" else "`Выключено`"}', inline=False)
+    embed.add_field(name='channel_delete',
+                    value=f'{"`Включено`" if isEnabledChannelDelete == "True" else "`Выключено`"}', inline=False)
+    embed.add_field(name='channel_update',
+                    value=f'{"`Включено`" if isEnabledChannelUpdate == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='member_join', value=f'{"`Включено`" if isEnabledMemberJoin == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='member_leave', value=f'{"`Включено`" if isEnabledMemberLeave == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='member_kick', value=f'{"`Включено`" if isEnabledMemberKick == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='member_unban', value=f'{"`Включено`" if isEnabledMemberUnban == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='member_update',
+                    value=f'{"`Включено`" if isEnabledMemberUpdate == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='voice_update',
+                    value=f'{"`Включено`" if isEnabledVoiceUpdate == "True" else "`Выключено`"}', inline=False)
+    embed.add_field(name='message_delete',
+                    value=f'{"`Включено`" if isEnabledMessageDelete == "True" else "`Выключено`"}', inline=False)
+    embed.add_field(name='message_edit', value=f'{"`Включено`" if isEnabledMessageEdit == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='role_create', value=f'{"`Включено`" if isEnabledRoleCreate == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='role_delete', value=f'{"`Включено`" if isEnabledRoleDelete == "True" else "`Выключено`"}',
+                    inline=False)
+    embed.add_field(name='role_update', value=f'{"`Включено`" if isEnabledRoleUpdate == "True" else "`Выключено`"}',
+                    inline=False)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+@bot.tree.command(name='логи-хелп-информация', description='Помощь по опциям логов.')
+async def logs_help_information(interaction: discord.Interaction):
+    if not interaction.user.guild_permissions.administrator:
+        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
+    embed = discord.Embed(title='Информация о логах:',
+                          description='**В данной информации представлены опции для логирования, для установки их:** `/логи-управление [тип] [True/False(Включить/Выключить)]`',
+                          color=0x9900ff)
+    embed.add_field(name='enabled', value='`[True/False] Включает функцию логирования действий.`', inline=False)
+    embed.add_field(name='actionlogchannel',
+                    value='`Устанавливает канал, где логируются действия.(/лог-канал-настройка)`', inline=False)
+    embed.add_field(name='channel_create', value='`Логирование создания текстового/голосового каналов.`', inline=False)
+    embed.add_field(name='channel_delete', value='`Логирование удаления текстового/голосового каналов.`', inline=False)
+    embed.add_field(name='channel_update', value='`Логирование обновления текстового/голосового каналов.`',
+                    inline=False)
+    embed.add_field(name='member_join', value='`Логирование захода пользователя на сервер.`', inline=False)
+    embed.add_field(name='member_leave', value='`Логирование выхода пользователя с сервера.`', inline=False)
+    embed.add_field(name='member_kick', value='`Логирование кика пользователя с сервера.`', inline=False)
+    embed.add_field(name='member_unban', value='`Логирование разбана пользователя.`', inline=False)
+    embed.add_field(name='member_update',
+                    value='`Логирование обновление пользователя(изменение ника/обновление ролей).`',
+                    inline=False)
+    embed.add_field(name='voice_update',
+                    value='`Логирование захода/перемещения/выхода пользователя в голосовых каналах.`', inline=False)
+    embed.add_field(name='message_delete', value='`Логирование удаления сообщения.`', inline=False)
+    embed.add_field(name='message_edit', value='`Логирование редактирования сообщения.`', inline=False)
+    embed.add_field(name='role_create', value='`Логирование создания роли.`', inline=False)
+    embed.add_field(name='role_delete', value='`Логирование удаление роли.`', inline=False)
+    embed.add_field(name='role_update', value='`Логирование обновления(изменение цвета/имени) роли.`', inline=False)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+@bot.tree.command(name='логи-управление', description='Управление опциями логов.')
+@app_commands.choices(опция=[
+    discord.app_commands.Choice(name='enable', value="enabled"),
+    discord.app_commands.Choice(name='channel_create', value="channel_create"),
+    discord.app_commands.Choice(name='channel_delete', value='channel_delete'),
+    discord.app_commands.Choice(name='channel_update', value="channel_update"),
+    discord.app_commands.Choice(name='member_join', value="member_join"),
+    discord.app_commands.Choice(name='member_leave', value="member_leave"),
+    discord.app_commands.Choice(name='member_kick', value="member_kick"),
+    discord.app_commands.Choice(name='member_unban', value="member_unban"),
+    discord.app_commands.Choice(name='member_update', value="member_update"),
+    discord.app_commands.Choice(name='voice_update', value="voice_update"),
+    discord.app_commands.Choice(name='message_delete', value="message_delete"),
+    discord.app_commands.Choice(name='message_edit', value="message_edit"),
+    discord.app_commands.Choice(name='role_create', value="role_create"),
+    discord.app_commands.Choice(name='role_delete', value="role_delete"),
+    discord.app_commands.Choice(name='role_update', value="role_update"),
+])
+@app_commands.choices(действие=[
+    discord.app_commands.Choice(name='Включить', value=1),
+    discord.app_commands.Choice(name='Выключить', value=2),
+])
+async def actionlog_settings(interaction: discord.Interaction, опция: app_commands.Choice[str],
+                             действие: app_commands.Choice[int]):
+    global enabled, _type
+    type = опция
+    t = действие
+    if not interaction.user.guild_permissions.administrator:
+        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
+    try:
+        database.find_one({'guild_id': interaction.guild.id})[f'{type.value}']
+    except KeyError:
+        return await interaction.response.send_message('`Тип логов не найден, просмотрите /логи-информация.`',
+                                                       ephemeral=True)
+    if t.value == 1:
+        isEnabled = database.find_one({'guild_id': interaction.guild.id})[f'{type.value}']
+        if isEnabled == 'True':
+            return await interaction.response.send_message('`Выбранный тип логов уже включен.`', ephemeral=True)
+        else:
+            enabled = 'Включено'
+            _type = 'True'
+    if t.value == 2:
+        isOff = database.find_one({'guild_id': interaction.guild.id})[f'{type.value}']
+        if isOff == 'False':
+            return await interaction.response.send_message('`Выбранный тип логов уже выключен.`', ephemeral=True)
+        else:
+            enabled = 'Выключено'
+            _type = 'False'
+    database.update_one({'guild_id': interaction.guild.id},
+                        {'$set': {f'{type.value}': _type}}
+                        )
+    await interaction.response.send_message(f'**Опция** `{type.value}` **изменена на** `"{enabled}"`.',
+                                            ephemeral=True)
+
+
+@bot.tree.command(name='лог-канал-настройка', description='Настройка канала логов.')
+async def actionlog(interaction: discord.Interaction, айди_канала_логов: str = None):
+    log_channel_id = айди_канала_логов
+    if not interaction.user.guild_permissions.administrator:
+        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
+    database.update_one({'guild_id': interaction.guild.id},
+                        {'$set': {'actlogchannel': log_channel_id}}
+                        )
+    await interaction.response.send_message(f'Айди канала логов изменен на `{log_channel_id}`.', ephemeral=True)
+
+
+@bot.tree.command(name='логи-управление-все', description='Включить/выключить все опции логов.')
+@app_commands.choices(действие=[
+    discord.app_commands.Choice(name='Включить', value=1),
+    discord.app_commands.Choice(name='Выключить', value=2),
+])
+async def log_settings_all(interaction: discord.Interaction, действие: app_commands.Choice[int]):
+    t = действие
+    all_set = [
+        'channel_create',
+        'channel_delete',
+        'channel_update',
+        'role_create',
+        'role_delete',
+        'role_update',
+        'voice_update',
+        'enabled',
+        'member_ban',
+        'member_join',
+        'member_kick',
+        'member_leave',
+        'member_unban',
+        'member_update',
+        'message_delete',
+        'message_edit',
+    ]
+    if t.value == 1:
+        i = 0
+        while i < len(all_set):
+            database.update_one({'guild_id': interaction.guild.id},
+                                {'$set': {f'{all_set[i]}': 'True'}}
+                                )
+
+            i += 1
+        return await interaction.response.send_message('`Все настройки были включены.`', ephemeral=True)
+    if t.value == 2:
+        i = 0
+        while i < len(all_set):
+            database.update_one({'guild_id': interaction.guild.id},
+                                {'$set': {f'{all_set[i]}': 'False'}}
+                                )
+            i += 1
+        await interaction.response.send_message('`Все настройки были выключены.`', ephemeral=True)
+
+
+@bot.tree.command(name='неко', description='Картинка кошкодевочки!')
+async def nekoFinder(interaction: discord.Interaction):
+    await _nekoFinder(interaction)
 
 bot.run(settings['token'])
