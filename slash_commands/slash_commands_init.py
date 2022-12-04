@@ -6,7 +6,7 @@ from discord.ext import commands
 from entertainment_slash import _avatar, _pat, _sad, _lick, _slap, _smug, _wink, _punch, _facepalm, _reversed_str, \
     _oh_shit_im_sorry, _cry, _hug, _kiss, _dance, _serverinfo, _ratewifu
 from anime_finder_slash import _anime_search
-from moderation_slash import _ping, _ban, _kick, _mute, _unmute, _setprefix, _get_server_prefix
+from moderation_slash import _ping, _ban, _kick, _mute, _unmute, _setprefix, _get_server_prefix, _clear, _unban
 from help_slash import _help
 from hentai_imgs_search import _search_hentai
 from nekofinder import _nekoFinder
@@ -41,68 +41,78 @@ async def on_command_error(ctx, error):
 
 
 @bot.tree.command(name='аниме',
-                  description='Выводит всю информацию про аниме. ')
+                  description='Выводит всю информацию про аниме ')
 async def anime_search(interaction: discord.Interaction, название: str):
     await _anime_search(interaction, название)
 
 
-@bot.tree.command(name='аватар', description='Показывает аватар пользователя.')
+@bot.tree.command(name='аватар', description='Показывает аватар пользователя')
 async def avatar(interaction: discord.Interaction, участник: discord.Member):
     member = участник
     await _avatar(interaction, member=member)
 
 
-@bot.tree.command(name='пинг', description='Узнать, онлайн ли бот.')
+@bot.tree.command(name='пинг', description='Узнать, онлайн ли бот')
 async def ping(interaction: discord.Interaction):
     await _ping(interaction)
 
 
-@bot.tree.command(name='перевернуть-текст', description='Выводит любой текст задом наперёд.')
+@bot.tree.command(name='clear', description='Очищает сообщения в канале.')
+async def clear(interaction: discord.Interaction, количество: int):
+    await _clear(interaction, количество)
+
+
+@bot.tree.command(name='разбанить', description='Разбанить пользователя.')
+async def unban(interaction: discord.Interaction, айди: str):
+    await _unban(interaction, айди_пользователя=айди)
+
+
+@bot.tree.command(name='перевернуть-текст', description='Выводит любой текст отзеркаленным')
 async def reversed_str(interaction: discord.Interaction, текст: str):
     await _reversed_str(interaction, текст)
 
 
-@bot.tree.command(name='шлёпнуть', description='Шлёпнуть пользователя.')
+@bot.tree.command(name='шлёпнуть', description='Шлёпнуть пользователя')
 async def slap(interaction: discord.Interaction, участник: discord.Member):
     await _slap(interaction, участник)
 
 
-@bot.tree.command(name='подмигнуть', description='Подмигнуть пользователю.')
+@bot.tree.command(name='подмигнуть', description='Подмигнуть пользователю')
 async def wink(interaction: discord.Interaction, участник: discord.Member):
     await _wink(interaction, участник)
 
 
-@bot.tree.command(name='ударить', description='Ударить пользователя.')
+@bot.tree.command(name='ударить', description='Ударить пользователя')
 async def punch(interaction: discord.Interaction, участник: discord.Member):
     await _punch(interaction, участник)
 
 
-@bot.tree.command(name='погладить', description='Погладить по голове пользователя.')
+@bot.tree.command(name='погладить', description='Погладить по голове пользователя')
 async def pat(interaction: discord.Interaction, участник: discord.Member):
     await _pat(interaction, участник)
 
 
-@bot.tree.command(name='извиниться', description='Извиниться перед пользователем.')
+@bot.tree.command(name='извиниться', description='Извиниться перед пользователем')
 async def oh_shit_im_sorry(interaction: discord.Interaction, участник: discord.Member):
     await _oh_shit_im_sorry(interaction, участник)
 
 
-@bot.tree.command(name='улыбка', description='Улыбнуться.')
+@bot.tree.command(name='улыбка', description='Улыбнуться')
 async def smug(interaction: discord.Interaction):
     await _smug(interaction)
 
 
-@bot.tree.command(name='грустить', description='Погрустить.')
+@bot.tree.command(name='грустить', description='Погрустить')
 async def sad(interaction: discord.Interaction):
     await _sad(interaction)
 
 
-@bot.tree.command(name='фейспалм', description='Кринжануть.')
+@bot.tree.command(name='фейспалм', description='Кринжануть')
 async def facepalm(interaction: discord.Interaction):
     await _facepalm(interaction)
 
 
-@bot.tree.command(name='лизнуть', description='Лизнуть пользователя.')
+@bot.tree.command(name='лизнуть', description='Лизнуть кого нибудь')
 async def lick(interaction: discord.Interaction, участник: discord.Member):
     await _lick(interaction, участник)
 
@@ -112,37 +122,37 @@ async def dance(interaction: discord.Interaction):
     await _dance(interaction)
 
 
-@bot.tree.command(name='поцеловать', description='Поцеловать пользователя.')
+@bot.tree.command(name='поцеловать', description='Поцеловать пользователя')
 async def kiss(interaction: discord.Interaction, участник: discord.Member):
     await _kiss(interaction, участник)
 
 
-@bot.tree.command(name='обнять', description='Обнять пользователя.')
+@bot.tree.command(name='обнять', description='Обнять пользователя')
 async def hug(interaction: discord.Interaction, участник: discord.Member):
     await _hug(interaction, участник)
 
 
-@bot.tree.command(name='поплакать', description='Поплакать на общее обозрение.')
+@bot.tree.command(name='поплакать', description='Поплакать на общее обозрение')
 async def cry(interaction: discord.Interaction):
     await _cry(interaction)
 
 
-@bot.tree.command(name='информация-о-сервере', description='Показывает информацию о сервере.')
+@bot.tree.command(name='информация-о-сервере', description='Показывает информацию о сервере')
 async def serverinfo(interaction: discord.Interaction):
     await _serverinfo(interaction)
 
 
-@bot.tree.command(name='префикс', description='Узнать префикс бота на этом сервере.')
+@bot.tree.command(name='префикс', description='Узнать префикс бота на этом сервере')
 async def get_server_prefix(interaction: discord.Interaction):
     await _get_server_prefix(interaction)
 
 
-@bot.tree.command(name='сменить-префикс', description='Меняет префикс бота.')
+@bot.tree.command(name='сменить-префикс', description='Меняет префикс бота')
 async def setprefix(interaction: discord.Interaction, новый_префикс: str):
     await _setprefix(interaction, новый_префикс)
 
 
-@bot.tree.command(name='выгнать', description='Выгоняет пользователя с сервера.')
+@bot.tree.command(name='кик', description='Выгоняет пользователя с сервера')
 async def kick(
         interaction: discord.Interaction,
         участник: discord.Member,
@@ -151,7 +161,7 @@ async def kick(
     await _kick(interaction, участник, причина)
 
 
-@bot.tree.command(name='забанить', description='Банит пользователя на сервере.')
+@bot.tree.command(name='бан', description='Банит пользователя на сервере')
 async def ban(
         interaction: discord.Interaction,
         участник: discord.Member,
@@ -160,7 +170,7 @@ async def ban(
     await _ban(interaction, участник, причина)
 
 
-@bot.tree.command(name='анмут', description='Снимает таймаут с пользователя.')
+@bot.tree.command(name='анмут', description='Снимает таймаут с пользователя')
 async def unmute(
         interaction: discord.Interaction,
         участник: discord.Member
@@ -168,30 +178,31 @@ async def unmute(
     await _unmute(interaction, участник)
 
 
-@bot.tree.command(name='замутить', description='Выдает таймаут пользователю.')
+@bot.tree.command(name='мут', description='Выдает таймаут пользователю')
+@app_commands.choices(тип=[
+    discord.app_commands.Choice(name='дни', value=1),
+    discord.app_commands.Choice(name='минуты', value=2),
+    discord.app_commands.Choice(name='часы', value=3),
+    discord.app_commands.Choice(name='секунды', value=4),
+])
 async def mute(
         interaction: discord.Interaction,
         участник: discord.Member,
         время: int,
-        тип: str = None,
+        тип: app_commands.Choice[int],
         причина: str = None
 ):
     await _mute(interaction, участник, время, тип, причина)
 
 
-@bot.tree.command(name='хелп', description='Информация о командах бота.')
+@bot.tree.command(name='хелп', description='Информация о командах бота')
 async def help(interaction: discord.Interaction, команда: str = None):
     await _help(interaction, команда)
 
 
-@bot.tree.command(name='оценить-вайфу', description='Оценивает пользователя по 10-бальной шкале.')
+@bot.tree.command(name='оценить-вайфу', description='Оценивает пользователя по 10-бальной шкале')
 async def ratewifu(interaction: discord.Interaction, участник: discord.Member):
     await _ratewifu(interaction, участник)
-
-
-# @bot.tree.command(name='r34', description='Поиск rule34 картинок по запросу. Примечание: запрос желателен на английском языке.')
-# async def r34(interaction: discord.Interaction, запрос: str):
-#    await _r34(interaction, запрос)
 
 
 @bot.tree.command(name='nsfw-картинки',
@@ -227,7 +238,13 @@ async def search_hentai(interaction: discord.Interaction, поиск: app_comman
     await _search_hentai(interaction, поиск)
 
 
-@bot.tree.command(name='логи-информация', description='Просмотреть статус всех опций логирования на этом сервере.')
+@bot.tree.command(name='r34',
+                  description='Поиск rule34 картинок по запросу. Примечание: запрос желателен на английском языке')
+async def r34(interaction: discord.Interaction, запрос: str):
+    await _r34(interaction, запрос)
+
+
+@bot.tree.command(name='логи-информация', description='Просмотреть статус всех опций логирования на этом сервере')
 async def _logs_information(interaction: discord.Interaction):
     isEnabled = database.find_one({'guild_id': interaction.guild.id})['enabled']
     logChannel = database.find_one({'guild_id': interaction.guild.id})['actlogchannel']
@@ -236,6 +253,7 @@ async def _logs_information(interaction: discord.Interaction):
     isEnabledChannelUpdate = database.find_one({'guild_id': interaction.guild.id})['channel_update']
     isEnabledMemberJoin = database.find_one({'guild_id': interaction.guild.id})['member_join']
     isEnabledMemberLeave = database.find_one({'guild_id': interaction.guild.id})['member_leave']
+    isEnabledMemberBan = database.find_one({'guild_id': interaction.guild.id})['member_ban']
     isEnabledMemberKick = database.find_one({'guild_id': interaction.guild.id})['member_kick']
     isEnabledMemberUnban = database.find_one({'guild_id': interaction.guild.id})['member_unban']
     isEnabledMemberUpdate = database.find_one({'guild_id': interaction.guild.id})['member_update']
@@ -268,6 +286,8 @@ async def _logs_information(interaction: discord.Interaction):
                     inline=False)
     embed.add_field(name='member_kick', value=f'{"`Включено`" if isEnabledMemberKick == "True" else "`Выключено`"}',
                     inline=False)
+    embed.add_field(name='member_ban', value=f'{"`Включено`" if isEnabledMemberBan == "True" else "`Выключено`"}',
+                    inline=False)
     embed.add_field(name='member_unban', value=f'{"`Включено`" if isEnabledMemberUnban == "True" else "`Выключено`"}',
                     inline=False)
     embed.add_field(name='member_update',
@@ -288,7 +308,7 @@ async def _logs_information(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
-@bot.tree.command(name='логи-хелп-информация', description='Помощь по опциям логов.')
+@bot.tree.command(name='логи-хелп-информация', description='Помощь по опциям логов')
 async def logs_help_information(interaction: discord.Interaction):
     if not interaction.user.guild_permissions.administrator:
         return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
@@ -303,6 +323,7 @@ async def logs_help_information(interaction: discord.Interaction):
     embed.add_field(name='channel_update', value='`Логирование обновления текстового/голосового каналов.`',
                     inline=False)
     embed.add_field(name='member_join', value='`Логирование захода пользователя на сервер.`', inline=False)
+    embed.add_field(name='member_ban', value='`Логирование бана пользователя.`', inline=False)
     embed.add_field(name='member_leave', value='`Логирование выхода пользователя с сервера.`', inline=False)
     embed.add_field(name='member_kick', value='`Логирование кика пользователя с сервера.`', inline=False)
     embed.add_field(name='member_unban', value='`Логирование разбана пользователя.`', inline=False)
@@ -319,7 +340,7 @@ async def logs_help_information(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
-@bot.tree.command(name='логи-управление', description='Управление опциями логов.')
+@bot.tree.command(name='логи-управление', description='Управление опциями логов')
 @app_commands.choices(опция=[
     discord.app_commands.Choice(name='enable', value="enabled"),
     discord.app_commands.Choice(name='channel_create', value="channel_create"),
@@ -374,9 +395,9 @@ async def actionlog_settings(interaction: discord.Interaction, опция: app_c
                                             ephemeral=True)
 
 
-@bot.tree.command(name='лог-канал-настройка', description='Настройка канала логов.')
-async def actionlog(interaction: discord.Interaction, айди_канала_логов: str = None):
-    log_channel_id = айди_канала_логов
+@bot.tree.command(name='лог-канал-настройка', description='Настройка канала логов')
+async def actionlog(interaction: discord.Interaction, канал: discord.TextChannel):
+    log_channel_id = канал.id
     if not interaction.user.guild_permissions.administrator:
         return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
     database.update_one({'guild_id': interaction.guild.id},
@@ -385,12 +406,12 @@ async def actionlog(interaction: discord.Interaction, айди_канала_ло
     await interaction.response.send_message(f'Айди канала логов изменен на `{log_channel_id}`.', ephemeral=True)
 
 
-@bot.tree.command(name='логи-управление-все', description='Включить/выключить все опции логов.')
+@bot.tree.command(name='логи-управление-все', description='Включить/выключить все опции логов')
 @app_commands.choices(действие=[
     discord.app_commands.Choice(name='Включить', value=1),
     discord.app_commands.Choice(name='Выключить', value=2),
 ])
-async def log_settings_all(interaction: discord.Interaction, действие: app_commands.Choice[int]):
+async def log_settings_all(interaction: discord.Interaction, действие: app_commands.Choice[int], ):
     t = действие
     all_set = [
         'channel_create',
@@ -432,5 +453,6 @@ async def log_settings_all(interaction: discord.Interaction, действие: a
 @bot.tree.command(name='неко', description='Картинка кошкодевочки!')
 async def nekoFinder(interaction: discord.Interaction):
     await _nekoFinder(interaction)
+
 
 bot.run(settings['token'])
