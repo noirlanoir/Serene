@@ -47,15 +47,15 @@ async def on_member_remove(member):
     if logChannel == '':
         return
     try:
-        got_ban = await member.guild.fetch_ban(member)
-    except discord.errors.Forbidden:
-        pass
+        got_ban = await server.fetch_ban(member)
         if got_ban:
             if isEnabledBan == 'True':
                 async for ban in server.audit_logs(action=discord.AuditLogAction.ban, limit=1):
                     print('\n')
-                embed = discord.Embed(title=kick.target,
-                                      description=f'`Пользователь` <@{ban.target.id}> `был забанен пользователем` <@{ban.user.id}> `сегодня в {datetime.now().strftime("%d.%m.%Y, %H:%M:%S")}.`')
+                embed = discord.Embed(title='[BAN]', color=0x9900ff)
+                embed.add_field(name='`Пользователь:`', value=ban.target.mention, inline=False)
+                embed.add_field(name='Забанил:', value=ban.user.mention, inline=False)
+                embed.add_field(name='`Время:`', value=f'**{ban.created_at.strftime("%d.%m.%Y, %H:%M:%S")}**')
                 embed.set_author(icon_url=member.guild.icon, name=member.guild.name)
                 embed.set_footer(text="🤍 • Serene.")
                 try:
@@ -70,8 +70,10 @@ async def on_member_remove(member):
                 if kick.created_at.timestamp() + 5 >= datetime.now().timestamp() <= (
                         datetime.now() + timedelta(seconds=15)).timestamp():
                     if isEnabledKick == 'True':
-                        embed = discord.Embed(title=kick.target, color=0x9900ff,
-                                              description=f'`Пользователь` <@{kick.target.id}> `был кикнул пользователем` <@{kick.user.id}> `сегодня в {kick.created_atstrftime("%d.%m.%Y, %H:%M:%S")}`')
+                        embed = discord.Embed(title='[KICK]', color=0x9900ff)
+                        embed.add_field(name='`Пользователь:`', value=kick.target.mention, inline=False)
+                        embed.add_field(name='Кикнул:', value=kick.user.mention, inline=False)
+                        embed.add_field(name='`Время:`', value=f'**{kick.created_at.strftime("%d.%m.%Y, %H:%M:%S")}**')
                         embed.set_author(icon_url=member.guild.icon, name=member.guild.name)
                         embed.set_footer(text="🤍 • Serene.")
                         try:
@@ -80,8 +82,9 @@ async def on_member_remove(member):
                             return
                 else:
                     if isEnabledLeave == 'True':
-                        embed = discord.Embed(title=member, color=0x9900ff,
-                                              description=f'`Пользователь` {member.mention} `покинул сервер сегодня в {datetime.now().strftime("%d.%m.%Y, %H:%M:%S")}.`')
+                        embed = discord.Embed(title='[LEAVE]', color=0x9900ff)
+                        embed.add_field(name='`Пользователь:`', value=member.mention, inline=False)
+                        embed.add_field(name='`Время:`', value=f'**{datetime.now().strftime("%d.%m.%Y, %H:%M:%S")}**')
                         embed.set_author(icon_url=member.guild.icon, name=member.guild.name)
                         embed.set_footer(text="🤍 • Serene.")
                         try:
@@ -102,8 +105,9 @@ async def on_member_join(member):
     if logChannel == '':
         return
     if isEnabledJoin == 'True':
-        embed = discord.Embed(title=member, color=0x9900ff,
-                              description=f'`Пользователь` {member.mention} `присоединился к серверу сегодня в {datetime.now().strftime("%d.%m.%Y, %H:%M:%S")}.`')
+        embed = discord.Embed(title='[JOIN]', color=0x9900ff)
+        embed.add_field(name='`Пользователь:`', value=member.mention, inline=False)
+        embed.add_field(name='`Время:`', value=f'**{datetime.now().strftime("%d.%m.%Y, %H:%M:%S")}**')
         embed.set_author(icon_url=member.guild.icon, name=member.guild.name)
         embed.set_footer(text="🤍 • Serene.")
         try:
@@ -131,9 +135,11 @@ async def on_member_unban(guild, user):
     async for entry in guild.audit_logs(action=discord.AuditLogAction.unban, limit=1):
         print('\n')
     embed_unban = discord.Embed(color=0x9900ff,
-                                title='`Пользователь разбанен.`',
-                                description=f'`Пользователь` <@{entry.user.id}> `разбанил пользователя` <@{entry.target.id}>')
-    embed_unban.set_author(icon_url=member.guild.icon, name=member.guild.name)
+                                title=f'`[UNBAN]`')
+    embed_unban.add_field(name='`Пользователь:`', value=entry.user.mention, inline=False)
+    embed_unban.add_field(name='`Разбанил:`', value=entry.target.mention, inline=False)
+    embed_unban.add_field(name='`Время:`', value=f'**{datetime.now().strftime("%d.%m.%Y, %H:%M:%S")}**')
+    embed_unban.set_author(icon_url=guild.icon, name=guild.name)
     embed_unban.set_footer(text="🤍 • Serene.")
     try:
         await log_channel.send(embed=embed_unban)
@@ -163,9 +169,10 @@ async def on_member_update(before, after):
         if len(roles_before) < len(roles_after):
             new_role_given = next(role for role in after.roles if role not in before.roles)
             embed_role_given = discord.Embed(
-                color=0x9900ff, title=f'`Выдача роли.`',
-                description=f"`Роли пользователя` <@{member_update.target.id}> `были изменены.`\n `Выдана роль:` <@&{new_role_given.id}>`.`\n")
-            embed_role_given.add_field(name=f'`Выдал:`', value=member_update.user.mention)
+                color=0x9900ff, title=f'`Выдача роли`',
+                description=f"`Роли пользователя` <@{member_update.target.id}> `были изменены.`")
+            embed_role_given.add_field(name='`Выдана роль:`', value=new_role_given.mention, inline=False)
+            embed_role_given.add_field(name=f'`Выдал:`', value=member_update.user.mention, inline=False)
             embed_role_given.set_author(icon_url=before.guild.icon, name=before.guild.name)
             embed_role_given.set_footer(text="🤍 • Serene.")
             embed_role_given.timestamp = datetime.now()
@@ -173,9 +180,10 @@ async def on_member_update(before, after):
         if len(roles_before) > len(roles_after):
             role_taken = next(role for role in before.roles if role not in after.roles)
             embed_role_taken = discord.Embed(
-                color=0x9900ff, title=f'`Снятие роли.`',
-                description=f"`Роли пользователя` <@{member_update.target.id}> `были изменены.`\n `Снята роль:` <@&{role_taken.id}>`.`\n")
-            embed_role_taken.add_field(name=f'`Снял:`', value=member_update.user.mention)
+                color=0x9900ff, title=f'`Снятие роли`',
+                description=f"`Роли пользователя` <@{member_update.target.id}> `были изменены.`")
+            embed_role_taken.add_field(name='`Снята роль:`', value=role_taken.mention, inline=False)
+            embed_role_taken.add_field(name=f'`Снял:`', value=member_update.user.mention, inline=False)
             embed_role_taken.set_author(icon_url=before.guild.icon, name=before.guild.name)
             embed_role_taken.set_footer(text="🤍 • Serene.")
             embed_role_taken.timestamp = datetime.now()
@@ -188,7 +196,7 @@ async def on_member_update(before, after):
         else:
             if before.display_name == after.display_name:
                 return
-            embed_user_upd = discord.Embed(title='`Обновление пользователя.`',
+            embed_user_upd = discord.Embed(title='`Обновление пользователя`',
                                            description=f'`Пользователь` <@{update.user.id}> `сменил ник` <@{update.target.id}>`.`',
                                            color=0x9900ff
                                            )
@@ -201,18 +209,17 @@ async def on_member_update(before, after):
                 return await log_channel.send(embed=embed_user_upd)
             except AttributeError:
                 return
-
     name_before = before.display_name
     name_after = after.display_name
     if name_before == name_after:
         return
     else:
         embed_nickname_changed = discord.Embed(
-            color=0x9900ff, title=f'`Смена никнейма.`',
+            color=0x9900ff, title=f'`Смена никнейма`',
         )
         embed_nickname_changed.add_field(name='`Пользователь:`', value=before.mention)
-        embed_nickname_changed.add_field(name='`Был:`', value=name_before, inline=False)
-        embed_nickname_changed.add_field(name='`Стал:`', value=name_after, inline=False)
+        embed_nickname_changed.add_field(name='`Старый ник:`', value=name_before, inline=False)
+        embed_nickname_changed.add_field(name='`Новый ник:`', value=name_after, inline=False)
         embed_nickname_changed.set_author(name=f"{server.name}", icon_url=server.icon)
         embed_nickname_changed.set_footer(text="🤍 • Serene.")
         embed_nickname_changed.timestamp = datetime.now()
@@ -240,9 +247,9 @@ async def on_guild_channel_create(channel):
         print('\n')
     embed_channel_create = discord.Embed(
         colour=0x9900ff,
-        title='`Создание канала.`',
-        description=f'`Создал:` <@{entry.user.id}>'
+        title='`Создание канала`',
     )
+    embed_channel_create.add_field(name='`Создал:`', value=f'<@{entry.user.id}>')
     embed_channel_create.add_field(name='`Название канала: `', value=f'**{channel.name}**', inline=False)
     embed_channel_create.add_field(name='`Ссылка на канал: `', value=f'<#{entry.target.id}>', inline=False)
     embed_channel_create.set_author(name=f"{server.name}", icon_url=server.icon)
@@ -272,9 +279,9 @@ async def on_guild_channel_delete(channel):
         print('\n')
     embed_channel_delete = discord.Embed(
         colour=0x9900ff,
-        title='`Удаление канала.`',
-        description=f'`Удалил:` <@{entry.user.id}>'
+        title='`Удаление канала`',
     )
+    embed_channel_delete.add_field(name='`Удалил:`', value=entry.user.mention)
     embed_channel_delete.add_field(name='`Название канала: `', value=f'**{channel.name}**', inline=False)
     embed_channel_delete.set_author(name=f"{server.name}", icon_url=server.icon)
     embed_channel_delete.set_footer(text="🤍 • Serene.")
@@ -307,11 +314,11 @@ async def on_guild_channel_update(before, after):
         print('\n')
     embed_channel_update = discord.Embed(
         title=f"`Переименование канала`",
-        description=f"`Канал` <#{after.id}> `был переименован.\n",
+        description=f"`Канал` <#{after.id}> `был переименован`",
         color=0x9900ff,
     )
-    embed_channel_update.add_field(name='`Старое название:`', value=before_name, inline=False)
-    embed_channel_update.add_field(name='`Новое название:`', value=after_name, inline=False)
+    embed_channel_update.add_field(name='`Старое название:`', value=f'**{before_name}**', inline=False)
+    embed_channel_update.add_field(name='`Новое название:`', value=f'**{after_name}**', inline=False)
     embed_channel_update.add_field(name='`Обновил:`', value=f'<@{entry.user.id}>')
     embed_channel_update.set_author(name=f"{server.name}", icon_url=server.icon)
     embed_channel_update.set_footer(text="🤍 • Serene.")
@@ -344,26 +351,26 @@ async def on_guild_role_update(before, after):
         embed_role_update = discord.Embed(
             title='`Обновление роли`',
             colour=0x9900ff,
-            description="`У роли` " + f'<@&{before.id}>' + f' `изменен цвет:`\n '
+            description="`У роли` " + before.mention + f' `изменен цвет`\n '
         )
-        embed_role_update.add_field(name='`Был:`', value=colour_before, inline=False)
-        embed_role_update.add_field(name='`Стал:`', value=colour_after, inline=False)
+        embed_role_update.add_field(name='`Старый цвет:`', value=f'**{colour_before}**', inline=False)
+        embed_role_update.add_field(name='`Новый цвет:`', value=f'**{colour_after}**', inline=False)
         embed_role_update.add_field(name='`Обновил:`', value=f'<@{entry.user.id}>', inline=False)
-        embed_role_delete.set_footer(text="🤍 • Serene.")
+        embed_role_update.set_footer(text="🤍 • Serene.")
         embed_role_update.set_author(name=f"{server.name}", icon_url=server.icon)
         embed_role_update.timestamp = datetime.now()
         try:
-            await logs.send(embed=embed_role_update)
+            await log_channel.send(embed=embed_role_update)
         except AttributeError:
             return
     if before.name != after.name:
         embed_role_update = discord.Embed(
             title='`Обновление роли`',
             colour=0x9900ff,
-            description="`Роль` " + f'<@&{after.id}>' + "` переименована.`\n"
+            description="`Роль` " + after.mention + "` переименована`\n"
         )
         embed_role_update.add_field(name='`Старое имя:`', value=f'**{before.name}**', inline=False)
-        embed_role_update.add_field(name='`Новое имя:`', value=f'<@&{after.id}>', inline=False)
+        embed_role_update.add_field(name='`Новое имя:`', value=f'**{after.name}**', inline=False)
         embed_role_update.add_field(name='`Обновил:`', value=f'<@{entry.user.id}>', inline=False)
         embed_role_update.set_author(name=f"{server.name}", icon_url=server.icon)
         embed_role_update.set_footer(text="🤍 • Serene.")
@@ -376,10 +383,11 @@ async def on_guild_role_update(before, after):
 
 @bot.event
 async def on_guild_role_create(role):
+    global entry
     isEnabled = database.find_one({'guild_id': role.guild.id})['enabled']
     logChannel = database.find_one({'guild_id': role.guild.id})['actlogchannel']
     isEnabledRoleUpdate = database.find_one({'guild_id': role.guild.id})['role_create']
-    server = bot.get_guild(channel.guild.id)
+    server = bot.get_guild(role.guild.id)
     if isEnabled == 'False':
         return
     if logChannel == '':
@@ -387,15 +395,14 @@ async def on_guild_role_create(role):
     log_channel = server.get_channel(int(logChannel))
     if isEnabledRoleUpdate == 'False':
         return
-    global entry
-    async for entry in before.guild.audit_logs(action=discord.AuditLogAction.role_delete, limit=1):
+    async for entry in role.guild.audit_logs(action=discord.AuditLogAction.role_delete, limit=1):
         print('\n')
     embed_role_create = discord.Embed(
         title=f"`Создание новой роли`",
-        description=f"`Название:` {role.mention}",
         color=0x9900ff,
         timestamp=role.created_at)
-    embed_role_create.add_field(name='`Создал:`', value=f'<@{entry.user.id}>')
+    embed_role_create.add_field(name='`Название:`', value=f'**{role.name}**({role.mention})', inline=False)
+    embed_role_create.add_field(name='`Создал:`', value=f'<@{entry.user.id}>', inline=False)
     embed_role_create.set_author(name=f"{server.name}", icon_url=server.icon)
     embed_role_create.set_footer(text="🤍 • Serene.")
     embed_role_create.timestamp = datetime.now()
@@ -423,10 +430,10 @@ async def on_guild_role_delete(role):
         print('\n')
     embed_role_delete = discord.Embed(
         title=f"`Удаление роли`",
-        description=f"`Название:` **{role}**",
         color=0x9900ff,
         timestamp=role.created_at)
-    embed_role_delete.add_field(name='`Удалил:`', value=f'<@{entry.user.id}>')
+    embed_role_delete.add_field(name='`Название:`', value=f'**{role}**', inline=False)
+    embed_role_delete.add_field(name='`Удалил:`', value=f'<@{entry.user.id}>', inline=False)
     embed_role_delete.set_author(name=f"{server.name}", icon_url=server.icon)
     embed_role_delete.set_footer(text="🤍 • Serene.")
     embed_role_delete.timestamp = datetime.now()
@@ -453,7 +460,7 @@ async def on_message_delete(message):
     try:
         img = message.attachments[0].proxy_url
         if message.content == '':
-            embed_message_deleted_image = discord.Embed(title='`Удаленние картинки.`',
+            embed_message_deleted_image = discord.Embed(title='`Удаленние картинки`',
                                                         colour=0xFF0000)
             embed_message_deleted_image.add_field(name='`Канал:`',
                                                   value=f"<#{message_sent_channel.id}>",
@@ -468,7 +475,7 @@ async def on_message_delete(message):
             except AttributeError:
                 return
         if message.content != '':
-            embed_message_deleted_image = discord.Embed(title='`Удаленние картинки.`',
+            embed_message_deleted_image = discord.Embed(title='`Удаленние картинки`',
                                                         colour=0xFF0000)
             embed_message_deleted_image.add_field(name='`Сообщение с картинкой:`',
                                                   value=message.content,
@@ -484,7 +491,7 @@ async def on_message_delete(message):
             embed_message_deleted_image.set_footer(text="🤍 • Serene.")
             embed_message_deleted_image.timestamp = datetime.now()
             try:
-                return await logs.send(embed=embed_message_deleted_image)
+                return await log_channel.send(embed=embed_message_deleted_image)
             except AttributeError:
                 return
     except IndexError:
@@ -492,10 +499,10 @@ async def on_message_delete(message):
     if message.content == '':
         return
     embed_message_deleted = discord.Embed(
-        title=f"`Сообщение было удалено.`",
+        title=f"`Сообщение было удалено`",
         color=0xFF0000)
     embed_message_deleted.add_field(
-        name='`Удаленное сообщение:`', value=f"`{message.content}`",
+        name='`Удаленное сообщение:`', value=f"**{message.content}**",
         inline=False)
     embed_message_deleted.add_field(
         name='`Канал:`', value=f"<#{message_sent_channel.id}>",
@@ -512,7 +519,10 @@ async def on_message_delete(message):
 
 @bot.event
 async def on_message_edit(message_before, message_after):
-    isEnabled = database.find_one({'guild_id': message_before.guild.id})['enabled']
+    try:
+        isEnabled = database.find_one({'guild_id': message_before.guild.id})['enabled']
+    except AttributeError:
+        return
     logChannel = database.find_one({'guild_id': message_before.guild.id})['actlogchannel']
     isEnabledMessageEdit = database.find_one({'guild_id': message_before.guild.id})['message_edit']
     server = bot.get_guild(message_before.guild.id)
@@ -527,13 +537,13 @@ async def on_message_edit(message_before, message_after):
     if message_before.content == message_after.content:
         return
     embed_message_edited = discord.Embed(
-        title=f"`Сообщение было отредактировано.`",
+        title=f"`Сообщение было отредактировано`",
         color=0xFF0000)
     embed_message_edited.add_field(
-        name='`Сообщение до редактирования:`', value=f"`{message_before.content}`",
+        name='`Сообщение до редактирования:`', value=f"**{message_before.content}**",
         inline=False)
     embed_message_edited.add_field(
-        name='`Сообщение после редактирования:`', value=f"`{message_after.content}`",
+        name='`Сообщение после редактирования:`', value=f"**{message_after.content}**",
         inline=False)
     embed_message_edited.add_field(
         name='`Канал:`', value=f"<#{message_sent_channel_id}>",
@@ -590,7 +600,7 @@ async def on_voice_state_update(member, before, after):
         channel_id_switch_after = after.channel.id
         embed_channel_switched = discord.Embed(
             color=0x9900ff, title=f'`Смена голосового канала`',
-            description=f'{member.mention} `Сменил голосовой канал:` <#{channel_id_switch_before}> `->` <#{channel_id_switch_after}>')
+            description=f'{member.mention} `Сменил голосовой канал:` <#{channel_id_switch_before}> `➡` <#{channel_id_switch_after}>')
         embed_channel_switched.set_author(name=f"{server.name}", icon_url=server.icon)
         embed_channel_switched.set_footer(text="🤍 • Serene.")
         embed_channel_switched.timestamp = datetime.now()
