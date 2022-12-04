@@ -28,7 +28,6 @@ async def _avatar(interaction: discord.Interaction, member: discord.Member):
 async def _serverinfo(interaction: discord.Interaction):
     embed = discord.Embed(title=f"Информация про сервер:\n{interaction.guild.name}",
                           color=discord.Colour.purple())
-    embed.add_field(name='⠀', value='⠀', inline=False)
     embed.add_field(name='❖ Айди сервера:', value=f"`{interaction.guild.id}`", inline=False)
     embed.add_field(name='❖ Сервер создан:', value=f'`{interaction.guild.created_at.strftime("%d.%m.%Y, %H:%M:%S")}`',
                     inline=True)
@@ -37,9 +36,11 @@ async def _serverinfo(interaction: discord.Interaction):
     embed.add_field(name='❖ Бустеров:', value=f'`{len(interaction.guild.premium_subscribers)}`', inline=False)
     embed.add_field(name='❖ Уровень бустов сервера:', value=f'`{interaction.guild.premium_tier}`')
     embed.add_field(name='❖ Бустов сервера:', value=f'`{interaction.guild.premium_subscription_count}`', inline=False)
+    embed.add_field(name='❖ Эмодзи:', value=f'`{len(interaction.guild.emojis)}`', inline=False)
+    embed.add_field(name='❖ Стикеров:', value=f'`{len(interaction.guild.stickers)}`', inline=False)
     embed.add_field(name='❖ Ролей', value=f'`{len(interaction.guild.roles) - 1}`')
     embed.add_field(name='❖ Каналы:',
-                    value=f'• **Текстовых:** `{len(interaction.guild.text_channels)}` \n  • **Голосовых:** `{len(interaction.guild.voice_channels)}`',
+                    value=f' • **Текстовых:** `{len(interaction.guild.text_channels)}` \n   • **Голосовых:** `{len(interaction.guild.voice_channels)}`',
                     inline=False)
     embed.set_thumbnail(url=interaction.guild.icon.url)
     embed.set_footer(text="🤍 • Serene.")

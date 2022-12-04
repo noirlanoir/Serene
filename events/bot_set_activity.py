@@ -17,7 +17,7 @@ async def on_app_command_error(interaction: discord.Interaction, error: discord.
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="/help_module"))
+    await bot.change_presence(activity=discord.Game(name="/help"))
     await change_presence.start()
 
 

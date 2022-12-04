@@ -10,6 +10,6 @@ from discord import app_commands
 
 
 async def _nekoFinder(interaction: discord.Interaction):
-    embed = discord.Embed(title='Вот, что я нашла:', color=0x9900ff)
+    embed = discord.Embed(title='Вот что я нашла:', color=0x9900ff)
     embed.set_image(url=hmtai.get('nekos', 'neko'))
     await interaction.response.send_message(embed=embed)
