@@ -4,6 +4,8 @@ import discord
 import json
 from discord.ext import commands
 import os
+from discord import Spotify
+
 
 curr_dir = os.path.abspath(os.curdir)
 project_dir = os.path.dirname(curr_dir)
@@ -58,17 +60,22 @@ async def info(ctx, member: discord.Member = None):
             author_status = '`Не беспокоить.`'
         else:
             author_status = '`Не в сети.`'
+        nitro = ctx.author.premium_since
         embed = discord.Embed(color=0x9900ff, title=f'Информация о пользователе: {ctx.author.name}')
         embed.add_field(name='❖ Имя:', value='`' + ctx.author.name + '`')
         embed.add_field(name='❖ Имя на сервере:', value='`' + ctx.author.display_name + '`', inline=False)
         embed.add_field(name='❖ Айди:', value=f'`{ctx.author.id}`', inline=False)
         embed.add_field(name='❖ Аккаунт создан:',
                         value=f'`{ctx.author.created_at.strftime("%d.%m.%Y, %H:%M:%S")}`', inline=False)
+        for activity in ctx.author.activities:
+            if isinstance(activity, Spotify):
+                embed.add_field(name='❖ Слушает в Spotify:', value=f'`Название:` **{activity.title}**\n`Автор:` **{activity.artist}**\n`Альбом:` **{activity.album}**\n', inline=False)
+        embed.add_field(name='❖ Нитро с:', value=f'`{"Нитро отсутствует" if nitro is None else nitro.strftime("%d.%m.%Y, %H:%M:%S")}`', inline=False)
         embed.add_field(name='❖ Количество ролей:', value=f'`{len(ctx.author.roles) - 1}`', inline=False)
         embed.add_field(name='❖ Роли:', value=f'\n{rolelist}', inline=False)
         embed.add_field(name='❖ Статус:', value=author_status)
         embed.add_field(name='❖ Статусы: ',
-                        value=f'📱 Мобильный статус: {mobile_status_emoji}\n 🌍 Веб статус: {web_status_emoji}\n 💻 Пк статус: {desc_status_emoji}',
+                        value=f'📱 **Мобильный статус:** {mobile_status_emoji}\n 🌍 **Веб статус:** {web_status_emoji}\n 💻 Пк статус: {desc_status_emoji}',
                         inline=False)
         embed.set_image(url=ctx.author.avatar)
         embed.set_footer(text="🤍 • Serene.")
@@ -102,12 +109,17 @@ async def info(ctx, member: discord.Member = None):
             member_status = '`Не беспокоить.`'
         else:
             member_status = '`Не в сети.`'
+        nitro = member.premium_since
         embed = discord.Embed(color=0x9900ff, title=f'Информация о пользователе: {member.name}')
         embed.add_field(name='❖ Имя:', value='`' + member.name + '`')
         embed.add_field(name='❖ Имя на сервере:', value='`' + member.display_name + '`', inline=False)
         embed.add_field(name='❖ Айди:', value=f'`{member.id}`', inline=False)
         embed.add_field(name='❖ Аккаунт создан:',
                         value=f'`{member.created_at.strftime("%d.%m.%Y, %H:%M:%S")}`', inline=False)
+        for activity in member.activities:
+            if isinstance(activity, Spotify):
+                embed.add_field(name='❖ Слушает в Spotify:', value=f'`Название:` **{activity.title}**\n`Автор:` **{activity.artist}**\n`Альбом:` **{activity.album}**\n', inline=False)
+        embed.add_field(name='❖ Нитро с:', value=f'`{"Нитро отсутствует" if nitro is None else nitro.strftime("%d.%m.%Y, %H:%M:%S")}`')
         embed.add_field(name='❖ Количество ролей:', value=f'`{len(member.roles) - 1}`', inline=False)
         embed.add_field(name='❖ Роли:', value=f'\n{rolelist}', inline=False)
         embed.add_field(name='❖ Статус:', value=member_status)
