@@ -11,6 +11,8 @@ project_dir = os.path.dirname(curr_dir)
 prefix_dir = project_dir + '\settings\prefix.json'
 timestamp = datetime.datetime.today()
 
+bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
+
 
 async def _mute(
         interaction: discord.Interaction,
@@ -100,8 +102,9 @@ async def _unmute(
         await member.timeout(None)
         return await interaction.response.send_message(f'`Таймаут пользователю` {member.mention} `был успешно снят.`')
     else:
-        return await interaction.response.send_message(f'`Ошибка! Пользователь` {member.mention} `не находится в муте.`',
-                                                       ephemeral=True)
+        return await interaction.response.send_message(
+            f'`Ошибка! Пользователь` {member.mention} `не находится в муте.`',
+            ephemeral=True)
 
 
 async def _ban(
@@ -174,27 +177,6 @@ async def _setprefix(interaction: discord.Interaction, новый_префикс
         await interaction.response.send_message(f'Префикс успешно сменён на {new}.')
 
 
-async def _unban(interaction: discord.Interaction, айди_пользователя: str):
-    member_id = айди_пользователя
-    if not interaction.user.guild_permissions.administrator:
-        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
-    global banned_user
-    if member_id is None:
-        embed_error = discord.Embed(title='Ошибка снятия бана.',
-                                    description=f'{interaction.user.mention}, Укажите id пользователя!',
-                                    color=0x9900ff)
-        return await interaction.response.send_message(embed=embed_error, ephemeral=True)
-    try:
-        banned_user = await bot.fetch_user(int(member_id))
-        await interaction.guild.unban(banned_user)
-        await interaction.response.send_message(f'`Пользователь` {banned_user.mention} `был разбанен.`', ephemeral=True)
-    except discord.errors.NotFound:
-        embed_error = discord.Embed(title='Ошибка снятия бана.',
-                                    description=f'{interaction.user.mention}, Пользователь не в бане!',
-                                    color=0x9900ff)
-        await interaction.response.send_message(embed=embed_error, ephemeral=True)
-
-
 async def _clear(interaction: discord.Interaction, количество: int):
     amount = количество
     if not interaction.user.guild_permissions.manage_messages:
@@ -203,7 +185,8 @@ async def _clear(interaction: discord.Interaction, количество: int):
         return await interaction.response.send_message('`Количество удаляемых сообщений должно быть больше 0.`',
                                                        ephemeral=True)
     if amount > 500:
-        return await interaction.response.send_message('`Очистить за раз можно не больше 500 сообщений.`', ephemeral=True)
+        return await interaction.response.send_message('`Очистить за раз можно не больше 500 сообщений.`',
+                                                       ephemeral=True)
     await interaction.response.defer(ephemeral=True)
     deleted = await interaction.channel.purge(limit=amount)
     await interaction.followup.send(f'**Удалено `{len(deleted)}` сообщений.**', ephemeral=True)
@@ -214,7 +197,3 @@ async def _get_server_prefix(interaction: discord.Interaction):
         prefix = json.load(f)
     await interaction.response.send_message(f'Префикс бота на этом сервере: `{prefix[str(interaction.guild.id)]}`.',
                                             ephemeral=True)
-
-
-async def _ping(interaction: discord.Interaction):
-    await interaction.response.send_message(f'Понг! Я жив и ем шоколадки. `{round(bot.latency, 4)}` ms')

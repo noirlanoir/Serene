@@ -14,6 +14,6 @@ async def _search_hentai(interaction: discord.Interaction, поиск: app_comma
         return await interaction.response.send_message(
             '`В этом канале нельзя искать такое! Включите NSFW режим, чтобы использовать эту команду!`',
             ephemeral=True)
-    embed = discord.Embed(title='⠀', color=0x9900ff)
+    embed = discord.Embed(color=0x9900ff)
     embed.set_image(url=hmtai.get('hmtai', f'{поиск.value}'))
     await interaction.response.send_message(embed=embed)

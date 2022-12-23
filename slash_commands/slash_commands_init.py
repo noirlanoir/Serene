@@ -3,13 +3,14 @@ import discord
 from pymongo import MongoClient
 from discord import app_commands
 from discord.ext import commands
+from r34_finder_slash import _r34_finder
 from entertainment_slash import _avatar, _pat, _sad, _lick, _slap, _smug, _wink, _punch, _facepalm, _reversed_str, \
     _oh_shit_im_sorry, _cry, _hug, _kiss, _dance, _serverinfo, _ratewifu
 from anime_finder_slash import _anime_search
-from moderation_slash import _ping, _ban, _kick, _mute, _unmute, _setprefix, _get_server_prefix, _clear, _unban
+from moderation_slash import _ban, _kick, _mute, _unmute, _setprefix, _get_server_prefix, _clear
 from help_slash import _help
 from hentai_imgs_search import _search_hentai
-from nekofinder import _nekoFinder
+from nekofinder import _nekofinder
 
 bot = commands.Bot(command_prefix=settings['prefix'], case_insensitive=True, intents=discord.Intents.all())
 bot.remove_command('help')
@@ -54,17 +55,12 @@ async def avatar(interaction: discord.Interaction, участник: discord.Mem
 
 @bot.tree.command(name='пинг', description='Узнать, онлайн ли бот')
 async def ping(interaction: discord.Interaction):
-    await _ping(interaction)
+    await interaction.response.send_message('Понг! Я жив и ем шоколадки. `{0}` ms'.format(round(bot.latency, 4)))
 
 
 @bot.tree.command(name='clear', description='Очищает сообщения в канале.')
 async def clear(interaction: discord.Interaction, количество: int):
     await _clear(interaction, количество)
-
-
-@bot.tree.command(name='разбанить', description='Разбанить пользователя.')
-async def unban(interaction: discord.Interaction, айди: str):
-    await _unban(interaction, айди_пользователя=айди)
 
 
 @bot.tree.command(name='перевернуть-текст', description='Выводит любой текст отзеркаленным')
@@ -208,31 +204,31 @@ async def ratewifu(interaction: discord.Interaction, участник: discord.M
 @bot.tree.command(name='nsfw-картинки',
                   description='Поиск непристойных изображений!')
 @app_commands.choices(поиск=[
-    discord.app_commands.Choice(name='anal(анал)', value='anal'),
-    discord.app_commands.Choice(name='ass(попка)', value='ass'),
-    discord.app_commands.Choice(name='bdsm(бдсм)', value='bdsm'),
-    discord.app_commands.Choice(name='cum(малафья)', value='cum'),
-    discord.app_commands.Choice(name='classic(классическое)', value='classic'),
-    discord.app_commands.Choice(name='creampie(кремпайчик)', value='creampie'),
-    discord.app_commands.Choice(name='femdom(доминация девушек)', value='femdom'),
-    discord.app_commands.Choice(name='hentai(рандом хентайчик)', value='hentai'),
-    discord.app_commands.Choice(name='incest(инцест)', value='incest'),
-    discord.app_commands.Choice(name='masturbation(мастурбация)', value='femdom'),
-    discord.app_commands.Choice(name='public(в публичном месте)', value='public'),
-    discord.app_commands.Choice(name='ero(эро)', value='ero'),
-    discord.app_commands.Choice(name='orgy(оргия)', value='orgy'),
-    discord.app_commands.Choice(name='elves(эльфочки)', value='elves'),
-    discord.app_commands.Choice(name='yuri(лесбиянки)', value='yuri'),
-    discord.app_commands.Choice(name='pantsu(трусики)', value='pantsu'),
-    discord.app_commands.Choice(name='blowjob(минетик)', value='blowjob'),
-    discord.app_commands.Choice(name='boobjob(работа грудью)', value='boobjob'),
-    discord.app_commands.Choice(name='footjob(работа ножками)', value='footjob'),
-    discord.app_commands.Choice(name='handjob(работа ручками)', value='handjob'),
-    discord.app_commands.Choice(name='boobs(сисечки)', value='boobs'),
-    discord.app_commands.Choice(name='pussy(писечка)', value='pussy'),
-    discord.app_commands.Choice(name='uniform(униформа)', value='uniform'),
-    discord.app_commands.Choice(name='tentacles(тентакли)', value='tentacles'),
-    discord.app_commands.Choice(name='nsfwNeko(кошкодевочки)', value='nsfwNeko'),
+    discord.app_commands.Choice(name='anal (анал)', value='anal'),
+    discord.app_commands.Choice(name='ass (попка)', value='ass'),
+    discord.app_commands.Choice(name='bdsm (бдсм)', value='bdsm'),
+    discord.app_commands.Choice(name='cum (малафья)', value='cum'),
+    discord.app_commands.Choice(name='classic (классическое)', value='classic'),
+    discord.app_commands.Choice(name='creampie (кремпайчик)', value='creampie'),
+    discord.app_commands.Choice(name='femdom (доминация девушек)', value='femdom'),
+    discord.app_commands.Choice(name='hentai (рандом хентайчик)', value='hentai'),
+    discord.app_commands.Choice(name='incest (инцест)', value='incest'),
+    discord.app_commands.Choice(name='masturbation (мастурбация)', value='femdom'),
+    discord.app_commands.Choice(name='public (в публичном месте)', value='public'),
+    discord.app_commands.Choice(name='ero (эро)', value='ero'),
+    discord.app_commands.Choice(name='orgy (оргия)', value='orgy'),
+    discord.app_commands.Choice(name='elves (эльфочки)', value='elves'),
+    discord.app_commands.Choice(name='yuri (лесбиянки)', value='yuri'),
+    discord.app_commands.Choice(name='pantsu (трусики)', value='pantsu'),
+    discord.app_commands.Choice(name='blowjob (минетик)', value='blowjob'),
+    discord.app_commands.Choice(name='boobjob (работа грудью)', value='boobjob'),
+    discord.app_commands.Choice(name='footjob (работа ножками)', value='footjob'),
+    discord.app_commands.Choice(name='handjob (работа ручками)', value='handjob'),
+    discord.app_commands.Choice(name='boobs (сисечки)', value='boobs'),
+    discord.app_commands.Choice(name='pussy (писечка)', value='pussy'),
+    discord.app_commands.Choice(name='uniform (униформа)', value='uniform'),
+    discord.app_commands.Choice(name='tentacles (тентакли)', value='tentacles'),
+    discord.app_commands.Choice(name='nsfwNeko (кошкодевочки)', value='nsfwNeko'),
 ])
 async def search_hentai(interaction: discord.Interaction, поиск: app_commands.Choice[str]):
     await _search_hentai(interaction, поиск)
@@ -241,7 +237,7 @@ async def search_hentai(interaction: discord.Interaction, поиск: app_comman
 @bot.tree.command(name='r34',
                   description='Поиск rule34 картинок по запросу. Примечание: запрос желателен на английском языке')
 async def r34(interaction: discord.Interaction, запрос: str):
-    await _r34(interaction, запрос)
+    await _r34_finder(interaction, запрос)
 
 
 @bot.tree.command(name='логи-информация', description='Просмотреть статус всех опций логирования на этом сервере')
@@ -366,7 +362,7 @@ async def actionlog_settings(interaction: discord.Interaction, опция: app_c
                              действие: app_commands.Choice[int]):
     global enabled, _type
     type = опция
-    t = действие
+    action = действие
     if not interaction.user.guild_permissions.administrator:
         return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
     try:
@@ -374,14 +370,14 @@ async def actionlog_settings(interaction: discord.Interaction, опция: app_c
     except KeyError:
         return await interaction.response.send_message('`Тип логов не найден, просмотрите /логи-информация.`',
                                                        ephemeral=True)
-    if t.value == 1:
+    if action.value == 1:
         isEnabled = database.find_one({'guild_id': interaction.guild.id})[f'{type.value}']
         if isEnabled == 'True':
             return await interaction.response.send_message('`Выбранный тип логов уже включен.`', ephemeral=True)
         else:
             enabled = 'Включено'
             _type = 'True'
-    if t.value == 2:
+    if action.value == 2:
         isOff = database.find_one({'guild_id': interaction.guild.id})[f'{type.value}']
         if isOff == 'False':
             return await interaction.response.send_message('`Выбранный тип логов уже выключен.`', ephemeral=True)
@@ -412,7 +408,7 @@ async def actionlog(interaction: discord.Interaction, канал: discord.TextCh
     discord.app_commands.Choice(name='Выключить', value=2),
 ])
 async def log_settings_all(interaction: discord.Interaction, действие: app_commands.Choice[int], ):
-    t = действие
+    action = действие
     all_set = [
         'channel_create',
         'channel_delete',
@@ -431,7 +427,7 @@ async def log_settings_all(interaction: discord.Interaction, действие: a
         'message_delete',
         'message_edit',
     ]
-    if t.value == 1:
+    if action.value == 1:
         i = 0
         while i < len(all_set):
             database.update_one({'guild_id': interaction.guild.id},
@@ -440,7 +436,7 @@ async def log_settings_all(interaction: discord.Interaction, действие: a
 
             i += 1
         return await interaction.response.send_message('`Все настройки были включены.`', ephemeral=True)
-    if t.value == 2:
+    if action.value == 2:
         i = 0
         while i < len(all_set):
             database.update_one({'guild_id': interaction.guild.id},
@@ -452,7 +448,23 @@ async def log_settings_all(interaction: discord.Interaction, действие: a
 
 @bot.tree.command(name='неко', description='Картинка кошкодевочки!')
 async def nekoFinder(interaction: discord.Interaction):
-    await _nekoFinder(interaction)
+    await _nekofinder(interaction)
+
+
+@bot.tree.command(name='разбанить', description='Разбанить пользователя.')
+async def _unban(interaction: discord.Interaction, айди_пользователя: str):
+    member_id = айди_пользователя
+    if not interaction.user.guild_permissions.administrator:
+        return await interaction.response.send_message('`У вас отсутствуют права на это действие.`', ephemeral=True)
+    try:
+        banned_user = await bot.fetch_user(int(member_id))
+        await interaction.guild.unban(banned_user)
+        await interaction.response.send_message(f'`Пользователь` {banned_user.mention} `был разбанен.`', ephemeral=True)
+    except discord.errors.NotFound:
+        embed_error = discord.Embed(title='Ошибка снятия бана.',
+                                    description=f'{interaction.user.mention}, Пользователь не в бане!',
+                                    color=0x9900ff)
+        await interaction.response.send_message(embed=embed_error, ephemeral=True)
 
 
 bot.run(settings['token'])

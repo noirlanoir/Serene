@@ -6,7 +6,6 @@ from discord.ext import commands
 import os
 from discord import Spotify
 
-
 curr_dir = os.path.abspath(os.curdir)
 project_dir = os.path.dirname(curr_dir)
 prefix_dir = project_dir + '\settings\prefix.json'
@@ -69,8 +68,12 @@ async def info(ctx, member: discord.Member = None):
                         value=f'`{ctx.author.created_at.strftime("%d.%m.%Y, %H:%M:%S")}`', inline=False)
         for activity in ctx.author.activities:
             if isinstance(activity, Spotify):
-                embed.add_field(name='❖ Слушает в Spotify:', value=f'`Название:` **{activity.title}**\n`Автор:` **{activity.artist}**\n`Альбом:` **{activity.album}**\n', inline=False)
-        embed.add_field(name='❖ Нитро с:', value=f'`{"Нитро отсутствует" if nitro is None else nitro.strftime("%d.%m.%Y, %H:%M:%S")}`', inline=False)
+                embed.add_field(name='❖ Слушает в Spotify:',
+                                value=f'`Название:` **{activity.title}**\n`Автор:` **{activity.artist}**\n`Альбом:` **{activity.album}**\n',
+                                inline=False)
+        embed.add_field(name='❖ Нитро с:',
+                        value=f'`{"Нитро отсутствует" if nitro is None else nitro.strftime("%d.%m.%Y, %H:%M:%S")}`',
+                        inline=False)
         embed.add_field(name='❖ Количество ролей:', value=f'`{len(ctx.author.roles) - 1}`', inline=False)
         embed.add_field(name='❖ Роли:', value=f'\n{rolelist}', inline=False)
         embed.add_field(name='❖ Статус:', value=author_status)
@@ -81,6 +84,7 @@ async def info(ctx, member: discord.Member = None):
         embed.set_footer(text="🤍 • Serene.")
         await ctx.send(embed=embed)
     if member:
+        member = server.get_member(member.id)
         mobile_status = member.mobile_status
         pc_status = member.desktop_status
         web_status = member.web_status
@@ -118,8 +122,11 @@ async def info(ctx, member: discord.Member = None):
                         value=f'`{member.created_at.strftime("%d.%m.%Y, %H:%M:%S")}`', inline=False)
         for activity in member.activities:
             if isinstance(activity, Spotify):
-                embed.add_field(name='❖ Слушает в Spotify:', value=f'`Название:` **{activity.title}**\n`Автор:` **{activity.artist}**\n`Альбом:` **{activity.album}**\n', inline=False)
-        embed.add_field(name='❖ Нитро с:', value=f'`{"Нитро отсутствует" if nitro is None else nitro.strftime("%d.%m.%Y, %H:%M:%S")}`')
+                embed.add_field(name='❖ Слушает в Spotify:',
+                                value=f'`Название:` **{activity.title}**\n`Автор:` **{activity.artist}**\n`Альбом:` **{activity.album}**\n',
+                                inline=False)
+        embed.add_field(name='❖ Нитро с:',
+                        value=f'`{"Нитро отсутствует" if nitro is None else nitro.strftime("%d.%m.%Y, %H:%M:%S")}`')
         embed.add_field(name='❖ Количество ролей:', value=f'`{len(member.roles) - 1}`', inline=False)
         embed.add_field(name='❖ Роли:', value=f'\n{rolelist}', inline=False)
         embed.add_field(name='❖ Статус:', value=member_status)
@@ -133,7 +140,7 @@ async def info(ctx, member: discord.Member = None):
 
 @bot.event
 async def on_ready():
-    print(bot.user, 'is ready')
+    print('ready')
 
 
 @bot.tree.error
