@@ -1,5 +1,5 @@
 from datetime import datetime
-from settings.config import settings
+
 import discord
 import json
 from discord.ext import commands
@@ -84,6 +84,7 @@ async def info(ctx, member: discord.Member = None):
         embed.set_footer(text="🤍 • Serene.")
         await ctx.send(embed=embed)
     if member:
+        server = member.guild
         member = server.get_member(member.id)
         mobile_status = member.mobile_status
         pc_status = member.desktop_status

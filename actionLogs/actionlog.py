@@ -471,7 +471,7 @@ async def on_message_delete(message):
             embed_message_deleted_image.set_footer(text="🤍 • Serene.")
             embed_message_deleted_image.timestamp = datetime.now()
             try:
-                await logs.send(embed=embed_message_deleted_image)
+                await logChannel.send(embed=embed_message_deleted_image)
             except AttributeError:
                 return
         if message.content != '':
